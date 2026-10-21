@@ -1,0 +1,130 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum TransactionType {
+  INCOME
+  EXPENSE
+}
+
+enum Currency {
+  ARS
+  USD
+}
+
+enum Frequency {
+  WEEKLY
+  MONTHLY
+  YEARLY
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  name         String
+  passwordHash String
+  baseCurrency Currency @default(ARS)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  categories     Category[]
+  transactions   Transaction[]
+  budgets        Budget[]
+  recurringRules RecurringRule[]
+  refreshTokens  RefreshToken[]
+}
+
+model RefreshToken {
+  id        String    @id @default(cuid())
+  tokenHash String    @unique
+  expiresAt DateTime
+  revokedAt DateTime?
+  createdAt DateTime  @default(now())
+  userId    String
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model Category {
+  id        String          @id @default(cuid())
+  name      String
+  type      TransactionType
+  color     String          @default("#6366f1")
+  icon      String?
+  createdAt DateTime        @default(now())
+  userId    String
+
+  user           User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  transactions   Transaction[]
+  budgets        Budget[]
+  recurringRules RecurringRule[]
+
+  @@unique([userId, name, type])
+}
+
+model Transaction {
+  id              String          @id @default(cuid())
+  type            TransactionType
+  amount          Decimal         @db.Decimal(14, 2)
+  currency        Currency        @default(ARS)
+  exchangeRate    Decimal?        @db.Decimal(14, 4)
+  amountInBase    Decimal         @db.Decimal(14, 2)
+  date            DateTime        @db.Date
+  note            String?
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  deletedAt       DateTime?
+  userId          String
+  categoryId      String
+  recurringRuleId String?
+
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  category      Category       @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  recurringRule RecurringRule? @relation(fields: [recurringRuleId], references: [id], onDelete: SetNull)
+
+  // Evita duplicar el movimiento que genera una regla recurrente para una misma fecha
+  @@unique([recurringRuleId, date])
+  @@index([userId, date])
+  @@index([userId, categoryId, date])
+}
+
+model Budget {
+  id          String   @id @default(cuid())
+  month       DateTime @db.Date // siempre el día 1 del mes
+  limitAmount Decimal  @db.Decimal(14, 2)
+  userId      String
+  categoryId  String
+
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, categoryId, month])
+}
+
+model RecurringRule {
+  id         String          @id @default(cuid())
+  type       TransactionType
+  amount     Decimal         @db.Decimal(14, 2)
+  currency   Currency        @default(ARS)
+  note       String?
+  frequency  Frequency
+  startDate  DateTime        @db.Date
+  endDate    DateTime?       @db.Date
+  nextRunAt  DateTime        @db.Date
+  active     Boolean         @default(true)
+  userId     String
+  categoryId String
+
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  category     Category      @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  transactions Transaction[]
+
+  @@index([active, nextRunAt])
+}

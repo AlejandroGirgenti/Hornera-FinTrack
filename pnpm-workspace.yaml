@@ -1,0 +1,11 @@
+packages:
+  - apps/*
+  - packages/*
+
+# pnpm 10 bloquea los scripts de instalación por defecto.
+# Estas dependencias los necesitan (binarios nativos / generación de cliente).
+onlyBuiltDependencies:
+  - '@prisma/client'
+  - '@prisma/engines'
+  - esbuild
+  - prisma

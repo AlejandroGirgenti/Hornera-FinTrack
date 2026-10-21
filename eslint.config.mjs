@@ -1,0 +1,30 @@
+import js from '@eslint/js';
+import tseslint from 'typescript-eslint';
+
+export default tseslint.config(
+  {
+    ignores: [
+      '**/dist/**',
+      '**/node_modules/**',
+      '**/coverage/**',
+      'apps/api/prisma/migrations/**',
+    ],
+  },
+  js.configs.recommended,
+  ...tseslint.configs.recommended,
+  {
+    rules: {
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
+      ],
+      '@typescript-eslint/consistent-type-imports': 'error',
+      'no-console': 'warn',
+    },
+  },
+  {
+    // Scripts y tests pueden usar console
+    files: ['**/prisma/seed.ts', '**/*.test.ts', '**/tests/**'],
+    rules: { 'no-console': 'off' },
+  },
+);

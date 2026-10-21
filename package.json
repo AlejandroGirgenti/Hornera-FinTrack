@@ -1,0 +1,32 @@
+{
+  "name": "fintrack",
+  "private": true,
+  "version": "0.1.0",
+  "description": "FinTrack: dashboard de finanzas personales (monorepo fullstack)",
+  "packageManager": "pnpm@10.28.0",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "dev:api": "pnpm --filter @fintrack/api dev",
+    "build": "pnpm -r build",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "typecheck": "pnpm -r typecheck",
+    "test": "pnpm -r test",
+    "db:up": "docker compose up -d db",
+    "db:down": "docker compose down",
+    "db:generate": "pnpm --filter @fintrack/api db:generate",
+    "db:migrate": "pnpm --filter @fintrack/api db:migrate",
+    "db:seed": "pnpm --filter @fintrack/api db:seed"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/node": "^26.6.5",
+    "eslint": "^10.13.0",
+    "prettier": "^3.9.10",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.72.0"
+  }
+}
