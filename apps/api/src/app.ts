@@ -9,6 +9,7 @@ import { apiLimiter } from './middlewares/rate-limit';
 import { requestLogger } from './middlewares/request-logger';
 import { authRouter } from './modules/auth/auth.router';
 import { categoriesRouter } from './modules/categories/categories.router';
+import { transactionsRouter } from './modules/transactions/transactions.router';
 
 /**
  * Arma la aplicación Express sin ponerla a escuchar.
@@ -39,6 +40,7 @@ export function createApp() {
   app.use('/api/v1', apiLimiter);
   app.use('/api/v1/auth', authRouter);
   app.use('/api/v1/categories', categoriesRouter);
+  app.use('/api/v1/transactions', transactionsRouter);
 
   app.use(notFoundHandler);
   app.use(errorHandler);
