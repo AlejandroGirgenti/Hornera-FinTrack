@@ -5,12 +5,14 @@ import type { Currency, TransactionDto, TransactionType } from '@fintrack/shared
 import { Button } from '../../components/ui/Button';
 import { Field } from '../../components/ui/Field';
 import { Select } from '../../components/ui/Select';
+import { TypeToggle } from '../../components/ui/TypeToggle';
 import { todayInBuenosAires } from '../../lib/dates';
 import { formatMoney } from '../../lib/format';
 import { fromApiError, fromIssues } from '../auth/form-errors';
+import { useCategories } from '../categories/useCategories';
 import type { FieldErrors } from '../auth/form-errors';
 import { normalizeNumberInput } from './amount-input';
-import { useCategories, useSaveTransaction } from './useTransactions';
+import { useSaveTransaction } from './useTransactions';
 
 interface TransactionFormProps {
   /** Movimiento a editar; sin él, el formulario crea uno nuevo. */
@@ -18,8 +20,6 @@ interface TransactionFormProps {
   baseCurrency: Currency;
   onDone: () => void;
 }
-
-const TYPE_LABELS: Record<TransactionType, string> = { INCOME: 'Ingreso', EXPENSE: 'Gasto' };
 
 export function TransactionForm({ transaction, baseCurrency, onDone }: TransactionFormProps) {
   const isEditing = transaction !== null;
@@ -89,39 +89,7 @@ export function TransactionForm({ transaction, baseCurrency, onDone }: Transacti
 
   return (
     <form onSubmit={handleSubmit} noValidate className="space-y-4">
-      <fieldset className="space-y-1">
-        <legend className="text-sm font-medium text-slate-700 dark:text-slate-300">Tipo</legend>
-        <div className="grid grid-cols-2 gap-2">
-          {(['EXPENSE', 'INCOME'] as const).map((value) => (
-            <label
-              key={value}
-              className={`flex cursor-pointer items-center justify-center rounded-lg border px-3 py-2 text-sm font-medium has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-indigo-500 ${
-                type === value
-                  ? value === 'INCOME'
-                    ? 'border-emerald-500 bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300'
-                    : 'border-rose-500 bg-rose-50 text-rose-700 dark:bg-rose-950 dark:text-rose-300'
-                  : 'border-slate-300 text-slate-600 dark:border-slate-700 dark:text-slate-300'
-              } ${isEditing ? 'cursor-not-allowed opacity-60' : ''}`}
-            >
-              <input
-                type="radio"
-                name="type"
-                value={value}
-                checked={type === value}
-                disabled={isEditing}
-                onChange={() => changeType(value)}
-                className="sr-only"
-              />
-              {TYPE_LABELS[value]}
-            </label>
-          ))}
-        </div>
-        {isEditing && (
-          <p className="text-xs text-slate-500 dark:text-slate-400">
-            El tipo no se puede cambiar. Si te equivocaste, eliminá el movimiento y creá uno nuevo.
-          </p>
-        )}
-      </fieldset>
+      <TypeToggle value={type} onChange={changeType} disabled={isEditing} />
 
       <div className="grid grid-cols-[1fr_6rem] gap-3">
         <Field

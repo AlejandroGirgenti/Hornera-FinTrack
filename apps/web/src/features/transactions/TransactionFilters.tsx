@@ -3,9 +3,9 @@ import { currentMonth } from '../../lib/dates';
 import { useDebouncedValue } from '../../lib/useDebouncedValue';
 import { Button } from '../../components/ui/Button';
 import { Select } from '../../components/ui/Select';
+import { useCategories } from '../categories/useCategories';
 import { MonthPicker } from '../dashboard/MonthPicker';
 import type { TransactionFilters as Filters } from './filters';
-import { useCategories } from './useTransactions';
 
 interface TransactionFiltersProps {
   filters: Filters;

@@ -1,6 +1,5 @@
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import type {
-  CategoryDto,
   CreateTransactionInput,
   Paginated,
   TransactionDto,
@@ -9,14 +8,6 @@ import type {
 import { api } from '../../lib/api';
 import { toApiQuery } from './filters';
 import type { TransactionFilters } from './filters';
-
-export function useCategories() {
-  return useQuery({
-    queryKey: ['categories'],
-    queryFn: async () => (await api<{ data: CategoryDto[] }>('/categories')).data,
-    staleTime: 5 * 60_000,
-  });
-}
 
 export function useTransactionList(filters: TransactionFilters) {
   return useQuery({

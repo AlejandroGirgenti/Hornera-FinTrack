@@ -29,6 +29,7 @@ export function AppLayout() {
             {[
               { to: '/', label: 'Panel', end: true },
               { to: '/movimientos', label: 'Movimientos', end: false },
+              { to: '/categorias', label: 'Categorías', end: false },
             ].map((item) => (
               <NavLink
                 key={item.to}
