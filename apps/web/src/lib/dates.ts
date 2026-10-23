@@ -7,17 +7,20 @@ const TIME_ZONE = 'America/Argentina/Buenos_Aires';
 
 const pad = (value: number) => String(value).padStart(2, '0');
 
-/** Mes actual en Buenos Aires ("2026-10"). `now` se puede inyectar para testear. */
-export function currentMonth(now: Date = new Date()): string {
+/** Fecha de hoy en Buenos Aires ("2026-10-23"). `now` se puede inyectar para testear. */
+export function todayInBuenosAires(now: Date = new Date()): string {
   // El locale en-CA formatea como AAAA-MM-DD
   return new Intl.DateTimeFormat('en-CA', {
     timeZone: TIME_ZONE,
     year: 'numeric',
     month: '2-digit',
     day: '2-digit',
-  })
-    .format(now)
-    .slice(0, 7);
+  }).format(now);
+}
+
+/** Mes actual en Buenos Aires ("2026-10"). */
+export function currentMonth(now: Date = new Date()): string {
+  return todayInBuenosAires(now).slice(0, 7);
 }
 
 /** Suma (o resta) meses a un mes "AAAA-MM". */

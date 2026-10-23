@@ -39,3 +39,17 @@ const percentFormatter = new Intl.NumberFormat('es-AR', { maximumFractionDigits:
 export function formatPercent(value: number): string {
   return `${percentFormatter.format(value)} %`;
 }
+
+/** "2026-10-23" → "23 oct 2026". */
+export function formatDate(isoDate: string): string {
+  const [year = 0, month = 1, day = 1] = isoDate.split('-').map(Number);
+  return new Intl.DateTimeFormat('es-AR', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+    timeZone: 'UTC',
+  })
+    .format(new Date(Date.UTC(year, month - 1, day)))
+    .replace(/\./g, '')
+    .replace(/ de /g, ' ');
+}

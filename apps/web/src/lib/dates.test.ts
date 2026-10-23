@@ -1,5 +1,12 @@
 import { describe, expect, it } from 'vitest';
-import { addMonths, currentMonth, formatMonthLabel, formatMonthShort, monthRange } from './dates';
+import {
+  addMonths,
+  currentMonth,
+  formatMonthLabel,
+  formatMonthShort,
+  monthRange,
+  todayInBuenosAires,
+} from './dates';
 
 describe('currentMonth', () => {
   it('usa la fecha de Buenos Aires, no la de UTC', () => {
@@ -9,6 +16,13 @@ describe('currentMonth', () => {
 
   it('pasa al mes siguiente cuando ya es medianoche en Buenos Aires', () => {
     expect(currentMonth(new Date('2026-11-01T03:00:00Z'))).toBe('2026-11');
+  });
+});
+
+describe('todayInBuenosAires', () => {
+  it('devuelve el día de Buenos Aires, no el de UTC', () => {
+    expect(todayInBuenosAires(new Date('2026-11-01T01:30:00Z'))).toBe('2026-10-31');
+    expect(todayInBuenosAires(new Date('2026-11-01T03:00:00Z'))).toBe('2026-11-01');
   });
 });
 

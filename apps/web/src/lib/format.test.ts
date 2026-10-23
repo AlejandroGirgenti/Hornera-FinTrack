@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { formatCompact, formatMoney, formatPercent, formatShortDate } from './format';
+import { formatCompact, formatDate, formatMoney, formatPercent, formatShortDate } from './format';
 
+// Intl separa símbolo y número con un espacio no cortable (U+00A0): se normaliza para comparar
 const normalize = (text: string) => text.replace(/[\u00a0\u202f]/g, ' ');
 
 describe('formatMoney', () => {
@@ -19,6 +20,13 @@ describe('formatShortDate', () => {
   it('no desfasa la fecha por zona horaria', () => {
     expect(formatShortDate('2026-10-01')).toBe('1 oct');
     expect(formatShortDate('2026-12-31')).toBe('31 dic');
+  });
+});
+
+describe('formatDate', () => {
+  it('incluye el año y no desfasa la fecha', () => {
+    expect(formatDate('2026-10-23')).toBe('23 oct 2026');
+    expect(formatDate('2027-01-01')).toBe('1 ene 2027');
   });
 });
 
