@@ -9,8 +9,9 @@ import { apiLimiter } from './middlewares/rate-limit';
 import { requestLogger } from './middlewares/request-logger';
 import { authRouter } from './modules/auth/auth.router';
 import { categoriesRouter } from './modules/categories/categories.router';
-import { transactionsRouter } from './modules/transactions/transactions.router';
+import { exchangeRatesRouter } from './modules/exchange-rates/exchange-rates.router';
 import { reportsRouter } from './modules/reports/reports.router';
+import { transactionsRouter } from './modules/transactions/transactions.router';
 
 /**
  * Arma la aplicación Express sin ponerla a escuchar.
@@ -25,7 +26,10 @@ export function createApp() {
 
   app.use(requestLogger);
   app.use(helmet());
-  app.use(cors({ origin: env.corsOrigins, credentials: true }));
+  // Content-Disposition se expone para que el frontend (en otro dominio) lea el nombre del CSV
+  app.use(
+    cors({ origin: env.corsOrigins, credentials: true, exposedHeaders: ['Content-Disposition'] }),
+  );
   app.use(express.json({ limit: '100kb' }));
   app.use(cookieParser());
 
@@ -43,6 +47,7 @@ export function createApp() {
   app.use('/api/v1/categories', categoriesRouter);
   app.use('/api/v1/transactions', transactionsRouter);
   app.use('/api/v1/reports', reportsRouter);
+  app.use('/api/v1/exchange-rates', exchangeRatesRouter);
 
   app.use(notFoundHandler);
   app.use(errorHandler);

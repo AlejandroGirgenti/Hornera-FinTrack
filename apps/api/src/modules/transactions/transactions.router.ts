@@ -5,6 +5,7 @@ import { validateBody } from '../../middlewares/validate';
 import {
   createHandler,
   deleteHandler,
+  exportHandler,
   getHandler,
   listHandler,
   updateHandler,
@@ -16,6 +17,8 @@ export const transactionsRouter = Router();
 transactionsRouter.use(requireAuth);
 
 transactionsRouter.get('/', listHandler);
+// Tiene que ir antes de '/:id', si no "export" se tomaría como un id
+transactionsRouter.get('/export', exportHandler);
 transactionsRouter.post('/', validateBody(createTransactionSchema), createHandler);
 transactionsRouter.get('/:id', getHandler);
 transactionsRouter.patch('/:id', validateBody(updateTransactionSchema), updateHandler);

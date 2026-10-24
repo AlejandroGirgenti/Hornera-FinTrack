@@ -1,5 +1,12 @@
 import { describe, expect, it } from 'vitest';
-import { formatCompact, formatDate, formatMoney, formatPercent, formatShortDate } from './format';
+import {
+  formatCompact,
+  formatDate,
+  formatDateTime,
+  formatMoney,
+  formatPercent,
+  formatShortDate,
+} from './format';
 
 // Intl separa símbolo y número con un espacio no cortable (U+00A0): se normaliza para comparar
 const normalize = (text: string) => text.replace(/[\u00a0\u202f]/g, ' ');
@@ -27,6 +34,13 @@ describe('formatDate', () => {
   it('incluye el año y no desfasa la fecha', () => {
     expect(formatDate('2026-10-23')).toBe('23 oct 2026');
     expect(formatDate('2027-01-01')).toBe('1 ene 2027');
+  });
+});
+
+describe('formatDateTime', () => {
+  it('muestra la hora de Buenos Aires, no la de UTC', () => {
+    expect(formatDateTime('2026-10-22T18:00:00.000Z')).toBe('22 oct, 15:00');
+    expect(formatDateTime('2026-10-23T02:30:00.000Z')).toBe('22 oct, 23:30');
   });
 });
 

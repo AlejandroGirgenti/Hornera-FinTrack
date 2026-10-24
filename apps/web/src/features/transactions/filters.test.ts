@@ -81,4 +81,18 @@ describe('toApiQuery', () => {
     expect(query.get('type')).toBe('EXPENSE');
     expect(query.get('page')).toBe('2');
   });
+
+  it('para exportar no manda la paginación pero sí los filtros', () => {
+    const query = new URLSearchParams(
+      toApiQuery(
+        { month: '2026-10', type: 'INCOME', categoryId: '', q: 'sueldo', page: 3 },
+        { paged: false },
+      ),
+    );
+    expect(query.has('page')).toBe(false);
+    expect(query.has('pageSize')).toBe(false);
+    expect(query.get('from')).toBe('2026-10-01');
+    expect(query.get('type')).toBe('INCOME');
+    expect(query.get('q')).toBe('sueldo');
+  });
 });

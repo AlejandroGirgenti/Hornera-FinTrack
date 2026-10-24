@@ -53,3 +53,18 @@ export function formatDate(isoDate: string): string {
     .replace(/\./g, '')
     .replace(/ de /g, ' ');
 }
+
+/** "2026-10-22T18:00:00.000Z" → "22 oct, 15:00" (hora de Buenos Aires). */
+export function formatDateTime(timestamp: string): string {
+  return new Intl.DateTimeFormat('es-AR', {
+    day: 'numeric',
+    month: 'short',
+    hour: '2-digit',
+    minute: '2-digit',
+    hourCycle: 'h23',
+    timeZone: 'America/Argentina/Buenos_Aires',
+  })
+    .format(new Date(timestamp))
+    .replace(/\./g, '')
+    .replace(/ de /g, ' ');
+}

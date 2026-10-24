@@ -52,9 +52,16 @@ export function toSearchParams(filters: TransactionFilters, defaultMonth: string
   return params;
 }
 
-/** Query string para `GET /transactions`. */
-export function toApiQuery(filters: TransactionFilters): string {
-  const params = new URLSearchParams({ page: String(filters.page), pageSize: String(PAGE_SIZE) });
+/**
+ * Query string para `GET /transactions`. Para la exportación a CSV se pide sin paginar
+ * (`paged: false`): la API devuelve todos los movimientos que cumplen los filtros.
+ */
+export function toApiQuery(filters: TransactionFilters, { paged = true } = {}): string {
+  const params = new URLSearchParams();
+  if (paged) {
+    params.set('page', String(filters.page));
+    params.set('pageSize', String(PAGE_SIZE));
+  }
   if (filters.month) {
     const { from, to } = monthRange(filters.month);
     params.set('from', from);

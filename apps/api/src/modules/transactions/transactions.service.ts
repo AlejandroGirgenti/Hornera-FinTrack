@@ -71,13 +71,10 @@ async function findOwned(userId: string, id: string): Promise<TransactionRow> {
   return row;
 }
 
-export async function listTransactions(
-  userId: string,
-  query: ListTransactionsQuery,
-): Promise<Paginated<TransactionDto>> {
-  const { from, to, type, categoryId, q, page, pageSize, sortBy, order } = query;
+function buildWhere(userId: string, query: ListTransactionsQuery): Prisma.TransactionWhereInput {
+  const { from, to, type, categoryId, q } = query;
 
-  const where: Prisma.TransactionWhereInput = {
+  return {
     userId,
     deletedAt: null,
     ...(type ? { type } : {}),
@@ -94,26 +91,81 @@ export async function listTransactions(
         }
       : {}),
   };
+}
 
-  // Desempates fijos para que la paginación sea estable entre páginas
-  const orderBy: Prisma.TransactionOrderByWithRelationInput[] = [
+// Desempates fijos para que la paginación sea estable entre páginas
+function buildOrderBy(
+  sortBy: ListTransactionsQuery['sortBy'],
+  order: ListTransactionsQuery['order'],
+): Prisma.TransactionOrderByWithRelationInput[] {
+  return [
     sortBy === 'amount' ? { amountInBase: order } : { date: order },
     { createdAt: order },
     { id: 'asc' },
   ];
+}
+
+export async function listTransactions(
+  userId: string,
+  query: ListTransactionsQuery,
+): Promise<Paginated<TransactionDto>> {
+  const { page, pageSize, sortBy, order } = query;
+  const where = buildWhere(userId, query);
 
   const [total, rows] = await prisma.$transaction([
     prisma.transaction.count({ where }),
     prisma.transaction.findMany({
       where,
       include,
-      orderBy,
+      orderBy: buildOrderBy(sortBy, order),
       skip: (page - 1) * pageSize,
       take: pageSize,
     }),
   ]);
 
   return { data: rows.map(toDto), meta: buildPaginationMeta(page, pageSize, total) };
+}
+
+/** Tope de filas por exportación: evita armar un archivo gigante en memoria. */
+export const MAX_EXPORT_ROWS = 10_000;
+
+/** Todos los movimientos que cumplen los filtros (sin paginar), hasta `MAX_EXPORT_ROWS`. */
+export async function listAllForExport(
+  userId: string,
+  query: ListTransactionsQuery,
+): Promise<TransactionDto[]> {
+  const rows = await prisma.transaction.findMany({
+    where: buildWhere(userId, query),
+    include,
+    orderBy: buildOrderBy(query.sortBy, query.order),
+    take: MAX_EXPORT_ROWS,
+  });
+  return rows.map(toDto);
+}
+
+export interface ExportData {
+  transactions: TransactionDto[];
+  baseCurrency: Currency;
+  /** Nombre de la categoría filtrada, si se filtró por una. */
+  categoryName?: string;
+}
+
+/** Lo que necesita una exportación: los movimientos filtrados y el contexto para presentarlos. */
+export async function getExportData(
+  userId: string,
+  query: ListTransactionsQuery,
+): Promise<ExportData> {
+  const [transactions, baseCurrency, category] = await Promise.all([
+    listAllForExport(userId, query),
+    getBaseCurrency(userId),
+    query.categoryId
+      ? prisma.category.findFirst({
+          where: { id: query.categoryId, userId },
+          select: { name: true },
+        })
+      : null,
+  ]);
+  return { transactions, baseCurrency, ...(category ? { categoryName: category.name } : {}) };
 }
 
 export async function getTransaction(userId: string, id: string): Promise<TransactionDto> {

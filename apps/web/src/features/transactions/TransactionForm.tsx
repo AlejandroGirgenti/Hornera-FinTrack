@@ -1,18 +1,26 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import type { FormEvent } from 'react';
-import { createTransactionSchema, CURRENCIES, updateTransactionSchema } from '@fintrack/shared';
+import {
+  createTransactionSchema,
+  CURRENCIES,
+  updateTransactionSchema,
+  USD_RATE_TYPES,
+} from '@fintrack/shared';
 import type { Currency, TransactionDto, TransactionType } from '@fintrack/shared';
 import { Button } from '../../components/ui/Button';
 import { Field } from '../../components/ui/Field';
 import { Select } from '../../components/ui/Select';
 import { TypeToggle } from '../../components/ui/TypeToggle';
 import { todayInBuenosAires } from '../../lib/dates';
-import { formatMoney } from '../../lib/format';
+import { formatDateTime, formatMoney } from '../../lib/format';
 import { fromApiError, fromIssues } from '../auth/form-errors';
 import { useCategories } from '../categories/useCategories';
 import type { FieldErrors } from '../auth/form-errors';
 import { normalizeNumberInput } from './amount-input';
+import { USD_RATE_LABELS, canAutoRate } from './exchange-rate';
+import type { RateSource } from './exchange-rate';
 import { useSaveTransaction } from './useTransactions';
+import { useUsdRate } from './useUsdRate';
 
 interface TransactionFormProps {
   /** Movimiento a editar; sin él, el formulario crea uno nuevo. */
@@ -30,6 +38,8 @@ export function TransactionForm({ transaction, baseCurrency, onDone }: Transacti
   const [amount, setAmount] = useState(transaction?.amount ?? '');
   const [currency, setCurrency] = useState<Currency>(transaction?.currency ?? baseCurrency);
   const [rate, setRate] = useState(transaction?.exchangeRate ?? '');
+  // Al editar se respeta la cotización guardada; al crear se propone la del dólar oficial
+  const [rateSource, setRateSource] = useState<RateSource>(isEditing ? 'manual' : 'oficial');
   const [date, setDate] = useState(transaction?.date ?? todayInBuenosAires());
   const [categoryId, setCategoryId] = useState(transaction?.category.id ?? '');
   const [note, setNote] = useState(transaction?.note ?? '');
@@ -38,6 +48,13 @@ export function TransactionForm({ transaction, baseCurrency, onDone }: Transacti
 
   const typeCategories = (categories.data ?? []).filter((category) => category.type === type);
   const needsRate = currency !== baseCurrency;
+
+  // Cotización automática: se consulta solo si corresponde y la persona no eligió ingresarla a mano
+  const autoRate = needsRate && canAutoRate(baseCurrency, currency) && rateSource !== 'manual';
+  const usdRate = useUsdRate(rateSource === 'manual' ? 'oficial' : rateSource, autoRate);
+  useEffect(() => {
+    if (autoRate && usdRate.data) setRate(usdRate.data.sell);
+  }, [autoRate, usdRate.data]);
 
   // Equivalente aproximado en moneda base: solo orientativo, el servidor calcula el definitivo
   const preview = Number(normalizeNumberInput(amount)) * Number(normalizeNumberInput(rate));
@@ -104,7 +121,12 @@ export function TransactionForm({ transaction, baseCurrency, onDone }: Transacti
         <Select
           label="Moneda"
           value={currency}
-          onChange={(event) => setCurrency(event.target.value as Currency)}
+          onChange={(event) => {
+            const next = event.target.value as Currency;
+            setCurrency(next);
+            // Al pasar a dólares sin cotización cargada, se propone la automática
+            if (canAutoRate(baseCurrency, next) && rate.trim() === '') setRateSource('oficial');
+          }}
           error={errors.currency}
         >
           {CURRENCIES.map((value) => (
@@ -115,19 +137,46 @@ export function TransactionForm({ transaction, baseCurrency, onDone }: Transacti
         </Select>
       </div>
 
+      {needsRate && canAutoRate(baseCurrency, currency) && (
+        <Select
+          label="Tipo de dólar"
+          value={rateSource}
+          onChange={(event) => setRateSource(event.target.value as RateSource)}
+        >
+          {USD_RATE_TYPES.map((value) => (
+            <option key={value} value={value}>
+              {USD_RATE_LABELS[value]}
+            </option>
+          ))}
+          <option value="manual">Ingresar la cotización a mano</option>
+        </Select>
+      )}
+
       {needsRate && (
         <Field
           label="Cotización"
           inputMode="decimal"
           placeholder="1.200"
           value={rate}
-          onChange={(event) => setRate(event.target.value)}
+          onChange={(event) => {
+            setRate(event.target.value);
+            // Si la persona la escribe, deja de pisarse con la automática
+            setRateSource('manual');
+          }}
           error={errors.exchangeRate}
-          hint={
-            showPreview
-              ? `${baseCurrency} por 1 ${currency}. Equivale a unos ${formatMoney(preview, baseCurrency)}`
-              : `${baseCurrency} por 1 ${currency}. Se guarda con el movimiento.`
-          }
+          hint={[
+            `${baseCurrency} por 1 ${currency}.`,
+            autoRate && usdRate.isFetching && 'Buscando la cotización…',
+            autoRate &&
+              usdRate.isError &&
+              'No se pudo obtener la cotización automática: ingresala a mano.',
+            autoRate &&
+              usdRate.data &&
+              `Precio de venta, actualizado ${formatDateTime(usdRate.data.updatedAt)}.`,
+            showPreview && `Equivale a unos ${formatMoney(preview, baseCurrency)}.`,
+          ]
+            .filter(Boolean)
+            .join(' ')}
         />
       )}
 

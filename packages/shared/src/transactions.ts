@@ -89,6 +89,15 @@ export const listTransactionsQuerySchema = paginationQuerySchema
     path: ['from'],
   });
 
+/** Formatos en los que se pueden exportar los movimientos. */
+export const EXPORT_FORMATS = ['csv', 'xlsx'] as const;
+
+export const exportFormatQuerySchema = z.object({
+  format: z.enum(EXPORT_FORMATS).default('csv'),
+});
+
+export type ExportFormat = (typeof EXPORT_FORMATS)[number];
+
 export type CreateTransactionInput = z.infer<typeof createTransactionSchema>;
 export type UpdateTransactionInput = z.infer<typeof updateTransactionSchema>;
 export type ListTransactionsQuery = z.infer<typeof listTransactionsQuerySchema>;

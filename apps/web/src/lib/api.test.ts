@@ -1,5 +1,13 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { ApiError, api, refreshSession, setAccessToken, setSessionExpiredHandler } from './api';
+import {
+  ApiError,
+  api,
+  apiDownload,
+  filenameFromDisposition,
+  refreshSession,
+  setAccessToken,
+  setSessionExpiredHandler,
+} from './api';
 
 const session = { accessToken: 'token-nuevo', user: { id: 'u1', email: 'a@b.c', name: 'Ale' } };
 
@@ -136,5 +144,59 @@ describe('refreshSession', () => {
     await api('/reports/summary');
 
     expect(authHeader(1)).toBe('Bearer token-nuevo');
+  });
+});
+
+describe('filenameFromDisposition', () => {
+  it('extrae el nombre del archivo del encabezado', () => {
+    expect(filenameFromDisposition('attachment; filename="movimientos-2026-10-23.csv"')).toBe(
+      'movimientos-2026-10-23.csv',
+    );
+    expect(filenameFromDisposition('attachment; filename=datos.csv')).toBe('datos.csv');
+  });
+
+  it('devuelve null si no hay encabezado o no trae nombre', () => {
+    expect(filenameFromDisposition(null)).toBeNull();
+    expect(filenameFromDisposition('inline')).toBeNull();
+  });
+});
+
+describe('apiDownload', () => {
+  it('devuelve el archivo y su nombre', async () => {
+    setAccessToken('abc');
+    fetchMock.mockResolvedValueOnce(
+      new Response('a;b', {
+        status: 200,
+        headers: { 'Content-Disposition': 'attachment; filename="x.csv"' },
+      }),
+    );
+
+    const { blob, filename } = await apiDownload('/transactions/export');
+
+    expect(filename).toBe('x.csv');
+    expect(await blob.text()).toBe('a;b');
+    expect(authHeader(0)).toBe('Bearer abc');
+  });
+
+  it('renueva la sesión si el token venció y reintenta la descarga', async () => {
+    setAccessToken('vencido');
+    fetchMock
+      .mockResolvedValueOnce(apiError('UNAUTHORIZED', 'Token vencido', 401))
+      .mockResolvedValueOnce(json(session))
+      .mockResolvedValueOnce(new Response('ok', { status: 200 }));
+
+    const { blob } = await apiDownload('/transactions/export');
+
+    expect(await blob.text()).toBe('ok');
+    expect(authHeader(2)).toBe('Bearer token-nuevo');
+  });
+
+  it('lanza un ApiError cuando la API responde con error', async () => {
+    fetchMock.mockResolvedValueOnce(apiError('VALIDATION_ERROR', 'Filtros inválidos', 400));
+
+    await expect(apiDownload('/transactions/export')).rejects.toMatchObject({
+      status: 400,
+      code: 'VALIDATION_ERROR',
+    });
   });
 });

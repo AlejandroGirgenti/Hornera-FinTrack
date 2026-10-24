@@ -1,18 +1,20 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router';
-import type { TransactionDto } from '@fintrack/shared';
+import type { ExportFormat, TransactionDto } from '@fintrack/shared';
 import { Button } from '../../components/ui/Button';
 import { Card } from '../../components/ui/Card';
 import { ErrorCard } from '../../components/ui/ErrorCard';
 import { Modal } from '../../components/ui/Modal';
 import { Pagination } from '../../components/ui/Pagination';
+import { apiDownload } from '../../lib/api';
 import { currentMonth } from '../../lib/dates';
+import { saveBlob } from '../../lib/download';
 import { useAuth } from '../auth/AuthContext';
 import { DeleteTransactionDialog } from './DeleteTransactionDialog';
 import { TransactionFilters } from './TransactionFilters';
 import { TransactionForm } from './TransactionForm';
 import { TransactionList } from './TransactionList';
-import { PAGE_SIZE, parseFilters, toSearchParams } from './filters';
+import { PAGE_SIZE, parseFilters, toApiQuery, toSearchParams } from './filters';
 import type { TransactionFilters as Filters } from './filters';
 import { useTransactionList } from './useTransactions';
 
@@ -27,6 +29,8 @@ export function TransactionsPage() {
   const filters = parseFilters(searchParams, defaultMonth);
   const [dialog, setDialog] = useState<Dialog>({ kind: 'closed' });
   const [deleting, setDeleting] = useState<TransactionDto | null>(null);
+  const [exporting, setExporting] = useState<ExportFormat | null>(null);
+  const [exportError, setExportError] = useState<string | null>(null);
 
   const { data, isPending, isError, error, refetch, isFetching, isPlaceholderData } =
     useTransactionList(filters);
@@ -34,6 +38,24 @@ export function TransactionsPage() {
   function update(patch: Partial<Filters>) {
     const next = { ...filters, page: 1, ...patch };
     setSearchParams(toSearchParams(next, defaultMonth), { replace: true });
+  }
+
+  async function exportFile(format: ExportFormat) {
+    setExporting(format);
+    setExportError(null);
+    try {
+      // Se exportan todos los movimientos que cumplen los filtros actuales, no solo la página visible
+      const params = new URLSearchParams(toApiQuery(filters, { paged: false }));
+      params.set('format', format);
+      const { blob, filename } = await apiDownload(`/transactions/export?${params.toString()}`);
+      saveBlob(blob, filename ?? `movimientos.${format}`);
+    } catch (error) {
+      setExportError(
+        error instanceof Error ? error.message : 'No se pudo exportar los movimientos.',
+      );
+    } finally {
+      setExporting(null);
+    }
   }
 
   const isFiltered = Boolean(filters.type || filters.categoryId || filters.q);
@@ -53,10 +75,34 @@ export function TransactionsPage() {
             Tus ingresos y gastos, con filtros y búsqueda
           </p>
         </div>
-        <Button onClick={() => setDialog({ kind: 'form', transaction: null })}>
-          Nuevo movimiento
-        </Button>
+        <div className="flex flex-wrap items-center gap-2">
+          {(
+            [
+              { format: 'xlsx', label: 'Exportar Excel' },
+              { format: 'csv', label: 'Exportar CSV' },
+            ] as const
+          ).map((option) => (
+            <Button
+              key={option.format}
+              variant="secondary"
+              onClick={() => void exportFile(option.format)}
+              loading={exporting === option.format}
+              disabled={exporting !== null || !data || data.meta.total === 0}
+            >
+              {option.label}
+            </Button>
+          ))}
+          <Button onClick={() => setDialog({ kind: 'form', transaction: null })}>
+            Nuevo movimiento
+          </Button>
+        </div>
       </div>
+
+      {exportError && (
+        <p role="alert" className="text-sm text-rose-600 dark:text-rose-400">
+          {exportError}
+        </p>
+      )}
 
       <TransactionFilters
         filters={filters}

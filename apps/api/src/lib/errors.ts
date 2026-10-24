@@ -21,3 +21,6 @@ export const forbidden = (code: string, message: string) => new AppError(403, co
 export const notFound = (code: string, message: string) => new AppError(404, code, message);
 
 export const conflict = (code: string, message: string) => new AppError(409, code, message);
+
+/** Falló un servicio externo del que depende la respuesta. */
+export const badGateway = (code: string, message: string) => new AppError(502, code, message);

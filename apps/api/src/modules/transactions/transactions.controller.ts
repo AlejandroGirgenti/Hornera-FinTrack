@@ -1,7 +1,12 @@
 import type { Request, Response } from 'express';
-import { listTransactionsQuerySchema } from '@fintrack/shared';
+import { exportFormatQuerySchema, listTransactionsQuerySchema } from '@fintrack/shared';
 import type { CreateTransactionInput, UpdateTransactionInput } from '@fintrack/shared';
-import { badRequest, notFound, unauthorized } from '../../lib/errors';
+import { notFound, unauthorized } from '../../lib/errors';
+import { todayInBuenosAires } from '../../lib/dates';
+import { parseQuery } from '../../lib/validation';
+import { buildTransactionsCsv } from './transactions.csv';
+import { describeFilters } from './transactions.export-text';
+import { buildTransactionsWorkbook } from './transactions.xlsx';
 import * as transactionsService from './transactions.service';
 
 function currentUserId(req: Request): string {
@@ -19,16 +24,36 @@ function transactionId(req: Request): string {
 }
 
 export async function listHandler(req: Request, res: Response) {
-  const query = listTransactionsQuerySchema.safeParse(req.query);
-  if (!query.success) {
-    const details = query.error.issues.map((issue) => ({
-      field: issue.path.join('.'),
-      message: issue.message,
-    }));
-    throw badRequest('VALIDATION_ERROR', 'Los filtros enviados no son válidos', details);
+  const query = parseQuery(listTransactionsQuerySchema, req.query);
+  res.json(await transactionsService.listTransactions(currentUserId(req), query));
+}
+
+const XLSX_MIME = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+
+/**
+ * Descarga los movimientos filtrados (los mismos filtros que el listado) como CSV o como Excel,
+ * según `?format=csv|xlsx`. Sin formato se entrega CSV.
+ */
+export async function exportHandler(req: Request, res: Response) {
+  const query = parseQuery(listTransactionsQuerySchema, req.query);
+  const { format } = parseQuery(exportFormatQuerySchema, req.query);
+  const data = await transactionsService.getExportData(currentUserId(req), query);
+  const filename = `movimientos-${todayInBuenosAires()}.${format}`;
+
+  res.set('Content-Disposition', `attachment; filename="${filename}"`);
+
+  if (format === 'xlsx') {
+    const workbook = await buildTransactionsWorkbook({
+      transactions: data.transactions,
+      baseCurrency: data.baseCurrency,
+      filtersDescription: describeFilters(query, data.categoryName),
+      generatedAt: new Date(),
+    });
+    res.type(XLSX_MIME).send(workbook);
+    return;
   }
 
-  res.json(await transactionsService.listTransactions(currentUserId(req), query.data));
+  res.type('text/csv; charset=utf-8').send(buildTransactionsCsv(data.transactions));
 }
 
 export async function getHandler(req: Request, res: Response) {
