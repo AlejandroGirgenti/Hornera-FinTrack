@@ -20,20 +20,24 @@ function StatCard({
   };
 
   return (
-    <Card>
+    <Card className="flex items-baseline justify-between gap-3 sm:block">
       <p className="text-sm font-medium text-slate-500 dark:text-slate-400">{label}</p>
-      <p className={`mt-2 text-2xl font-semibold tabular-nums ${colors[tone]}`}>{value}</p>
+      <p
+        className={`wrap-break-word text-right text-xl font-semibold tabular-nums sm:mt-2 sm:text-left sm:text-2xl ${colors[tone]}`}
+      >
+        {value}
+      </p>
     </Card>
   );
 }
 
 function SkeletonCards() {
   return (
-    <div className="grid gap-4 sm:grid-cols-3" aria-hidden="true">
+    <div className="grid gap-3 sm:grid-cols-3 sm:gap-4" aria-hidden="true">
       {[0, 1, 2].map((item) => (
         <Card key={item}>
-          <div className="h-4 w-20 animate-pulse rounded bg-slate-200 dark:bg-slate-800" />
-          <div className="mt-3 h-8 w-32 animate-pulse rounded bg-slate-200 dark:bg-slate-800" />
+          <div className="h-4 w-20 animate-pulse rounded bg-slate-200/70 dark:bg-white/10" />
+          <div className="mt-3 h-8 w-32 animate-pulse rounded bg-slate-200/70 dark:bg-white/10" />
         </Card>
       ))}
     </div>
@@ -74,7 +78,7 @@ export function SummaryCards({ month }: { month: string }) {
         {formatShortDate(data.period.from)} al {formatShortDate(data.period.to)} ·{' '}
         {data.transactionCount === 1 ? '1 movimiento' : `${data.transactionCount} movimientos`}
       </p>
-      <div className="grid gap-4 sm:grid-cols-3">
+      <div className="grid gap-3 sm:grid-cols-3 sm:gap-4">
         <StatCard label="Ingresos" value={formatMoney(data.income)} tone="income" />
         <StatCard label="Gastos" value={formatMoney(data.expense)} tone="expense" />
         <StatCard

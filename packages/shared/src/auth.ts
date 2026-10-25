@@ -40,6 +40,8 @@ export interface AuthUser {
   email: string;
   name: string;
   baseCurrency: Currency;
+  /** Color de acento elegido (#rrggbb); null si usa el de por defecto. */
+  accentColor: string | null;
   createdAt: string;
 }
 

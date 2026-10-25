@@ -5,3 +5,5 @@ export * from './common';
 export * from './transactions';
 export * from './reports';
 export * from './exchange-rates';
+export * from './accent';
+export * from './profile';

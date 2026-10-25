@@ -3,18 +3,59 @@
 /* El modo oscuro se activa con la clase "dark" en <html> (ver lib/theme.ts) */
 @custom-variant dark (&:where(.dark, .dark *));
 
+/*
+ * Neutros de la app: reemplazan al "slate" azulado de Tailwind por grises casi negros con apenas
+ * un matiz violeta. Así todo el modo oscuro tira a negro y no a azul, sin tocar cada componente.
+ */
+@theme {
+  --color-slate-50: oklch(0.977 0.004 295);
+  --color-slate-100: oklch(0.945 0.005 295);
+  --color-slate-200: oklch(0.89 0.006 295);
+  --color-slate-300: oklch(0.8 0.008 295);
+  --color-slate-400: oklch(0.69 0.01 295);
+  --color-slate-500: oklch(0.56 0.01 295);
+  --color-slate-600: oklch(0.45 0.01 295);
+  --color-slate-700: oklch(0.33 0.009 295);
+  --color-slate-800: oklch(0.24 0.007 295);
+  --color-slate-900: oklch(0.17 0.005 295);
+  --color-slate-950: oklch(0.12 0.004 295);
+}
+
+/*
+ * Color de acento ("secundario") de la app. La base es el midnight purple y cada persona puede
+ * elegir otro en Configuración: lib/accent.ts solo cambia --accent y toda la escala se recalcula
+ * con color-mix (más blanco para los tonos claros, más negro para los oscuros).
+ */
+:root {
+  --accent: #4a2b8a;
+}
+
+@theme inline {
+  --color-accent-50: color-mix(in oklab, var(--accent) 8%, white);
+  --color-accent-100: color-mix(in oklab, var(--accent) 15%, white);
+  --color-accent-200: color-mix(in oklab, var(--accent) 28%, white);
+  --color-accent-300: color-mix(in oklab, var(--accent) 45%, white);
+  --color-accent-400: color-mix(in oklab, var(--accent) 65%, white);
+  --color-accent-500: color-mix(in oklab, var(--accent) 82%, white);
+  --color-accent-600: var(--accent);
+  --color-accent-700: color-mix(in oklab, var(--accent) 80%, black);
+  --color-accent-800: color-mix(in oklab, var(--accent) 62%, black);
+  --color-accent-900: color-mix(in oklab, var(--accent) 45%, black);
+  --color-accent-950: color-mix(in oklab, var(--accent) 28%, black);
+}
+
 :root {
   color-scheme: light;
   --chart-tooltip-bg: #ffffff;
-  --chart-tooltip-border: #e2e8f0;
-  --chart-tooltip-text: #0f172a;
+  --chart-tooltip-border: #e4e1ea;
+  --chart-tooltip-text: #0f0d14;
 }
 
 :root.dark {
   color-scheme: dark;
-  --chart-tooltip-bg: #0f172a;
-  --chart-tooltip-border: #334155;
-  --chart-tooltip-text: #f1f5f9;
+  --chart-tooltip-bg: #131316;
+  --chart-tooltip-border: #2c2c32;
+  --chart-tooltip-text: #f3f2f6;
 }
 
 @layer base {
@@ -22,7 +63,91 @@
     @apply bg-slate-50 text-slate-900 antialiased dark:bg-slate-950 dark:text-slate-100;
   }
 
+  /*
+   * Fondo con degradé: sin algo detrás, el efecto vidrio de las tarjetas no se vería. Va en un
+   * pseudo-elemento fijo (y no en background-attachment: fixed) porque en los celulares este
+   * último es poco confiable.
+   */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background:
+      radial-gradient(
+        60rem 38rem at 8% -8%,
+        color-mix(in oklab, var(--accent) 16%, transparent),
+        transparent
+      ),
+      radial-gradient(
+        52rem 36rem at 100% 8%,
+        color-mix(in oklab, var(--accent) 10%, transparent),
+        transparent
+      ),
+      radial-gradient(
+        50rem 34rem at 55% 115%,
+        color-mix(in oklab, var(--accent) 12%, transparent),
+        transparent
+      );
+  }
+
+  :root.dark body::before {
+    background:
+      radial-gradient(
+        60rem 38rem at 8% -8%,
+        color-mix(in oklab, var(--accent) 38%, transparent),
+        transparent
+      ),
+      radial-gradient(
+        52rem 36rem at 100% 8%,
+        color-mix(in oklab, var(--accent) 22%, transparent),
+        transparent
+      ),
+      radial-gradient(
+        50rem 34rem at 55% 115%,
+        color-mix(in oklab, var(--accent) 26%, transparent),
+        transparent
+      );
+  }
+
   :focus-visible {
-    @apply outline-2 outline-offset-2 outline-indigo-500;
+    @apply outline-2 outline-offset-2 outline-accent-500;
+  }
+}
+
+/* Efecto vidrio: fondo translúcido con el contenido de atrás difuminado */
+@layer components {
+  .glass {
+    background-color: color-mix(in oklab, white 62%, transparent);
+    border: 1px solid color-mix(in oklab, white 75%, transparent);
+    box-shadow:
+      0 10px 30px -12px color-mix(in oklab, var(--accent) 30%, transparent),
+      inset 0 1px 0 color-mix(in oklab, white 70%, transparent);
+    -webkit-backdrop-filter: blur(18px) saturate(150%);
+    backdrop-filter: blur(18px) saturate(150%);
+  }
+
+  /* Más opaco, para encabezado y diálogos, donde importa la lectura sobre lo que haya detrás */
+  .glass-strong {
+    background-color: color-mix(in oklab, white 84%, transparent);
+    border: 1px solid color-mix(in oklab, white 80%, transparent);
+    box-shadow: 0 18px 50px -16px color-mix(in oklab, var(--accent) 40%, transparent);
+    -webkit-backdrop-filter: blur(24px) saturate(150%);
+    backdrop-filter: blur(24px) saturate(150%);
+  }
+
+  :root.dark .glass {
+    background-color: color-mix(in oklab, white 5%, transparent);
+    border-color: color-mix(in oklab, white 10%, transparent);
+    box-shadow:
+      0 12px 36px -14px rgb(0 0 0 / 0.7),
+      inset 0 1px 0 color-mix(in oklab, white 8%, transparent);
+  }
+
+  :root.dark .glass-strong {
+    background-color: oklch(0.17 0.005 295 / 0.78);
+    border-color: color-mix(in oklab, white 12%, transparent);
+    box-shadow: 0 22px 60px -18px rgb(0 0 0 / 0.85);
   }
 }

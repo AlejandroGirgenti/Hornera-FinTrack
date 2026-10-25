@@ -114,7 +114,10 @@ export function TransactionsPage() {
       {isPending ? (
         <Card role="status" aria-label="Cargando movimientos" className="space-y-4">
           {[0, 1, 2, 3, 4].map((item) => (
-            <div key={item} className="h-10 animate-pulse rounded bg-slate-200 dark:bg-slate-800" />
+            <div
+              key={item}
+              className="h-10 animate-pulse rounded bg-slate-200/70 dark:bg-white/10"
+            />
           ))}
         </Card>
       ) : isError ? (

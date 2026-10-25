@@ -1,10 +1,6 @@
 import type { HTMLAttributes } from 'react';
 
+/** Tarjeta con efecto vidrio (ver .glass en index.css): deja ver el degradé de fondo. */
 export function Card({ className = '', ...props }: HTMLAttributes<HTMLDivElement>) {
-  return (
-    <div
-      {...props}
-      className={`rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900 ${className}`}
-    />
-  );
+  return <div {...props} className={`glass rounded-2xl p-4 sm:p-5 ${className}`} />;
 }

@@ -1,4 +1,5 @@
 import { Link, NavLink, Outlet } from 'react-router';
+import { Logo } from '../components/Logo';
 import { Button } from '../components/ui/Button';
 import { ThemeToggle } from '../components/ui/ThemeToggle';
 import { useAuth } from '../features/auth/AuthContext';
@@ -10,36 +11,34 @@ export function AppLayout() {
     <div className="min-h-screen">
       <a
         href="#contenido"
-        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-10 focus:rounded-lg focus:bg-white focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:text-indigo-600 focus:shadow dark:focus:bg-slate-900 dark:focus:text-indigo-400"
+        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-10 focus:rounded-lg focus:bg-white focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:text-accent-600 focus:shadow dark:focus:bg-slate-900 dark:focus:text-accent-400"
       >
         Saltar al contenido
       </a>
-      <header className="border-b border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
+      <header className="glass-strong sticky top-0 z-20 rounded-none border-x-0 border-t-0">
         <div className="mx-auto flex max-w-5xl flex-wrap items-center gap-x-4 gap-y-2 px-4 py-3">
-          <Link
-            to="/"
-            className="text-lg font-bold tracking-tight text-indigo-600 dark:text-indigo-400"
-          >
-            FinTrack
+          <Link to="/" aria-label="Hornera FinTrack, ir al panel">
+            <Logo hideNameOnMobile />
           </Link>
           <nav
             aria-label="Principal"
-            className="order-last flex w-full items-center gap-1 sm:order-none sm:w-auto sm:flex-1"
+            className="order-last -mx-1 flex w-full items-center gap-1 overflow-x-auto px-1 sm:order-none sm:mx-0 sm:w-auto sm:flex-1 sm:px-0"
           >
             {[
               { to: '/', label: 'Panel', end: true },
               { to: '/movimientos', label: 'Movimientos', end: false },
               { to: '/categorias', label: 'Categorías', end: false },
+              { to: '/configuracion', label: 'Configuración', end: false },
             ].map((item) => (
               <NavLink
                 key={item.to}
                 to={item.to}
                 end={item.end}
                 className={({ isActive }) =>
-                  `rounded-lg px-3 py-1.5 text-sm font-medium transition-colors ${
+                  `shrink-0 whitespace-nowrap rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
                     isActive
-                      ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300'
-                      : 'text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800'
+                      ? 'bg-accent-50 text-accent-700 dark:bg-accent-950 dark:text-accent-200'
+                      : 'text-slate-600 hover:bg-white/60 dark:text-slate-300 dark:hover:bg-white/10'
                   }`
                 }
               >
@@ -53,7 +52,8 @@ export function AppLayout() {
             </span>
             <ThemeToggle />
             <Button variant="secondary" onClick={() => void logout()}>
-              Cerrar sesión
+              <span className="sm:hidden">Salir</span>
+              <span className="hidden sm:inline">Cerrar sesión</span>
             </Button>
           </div>
         </div>

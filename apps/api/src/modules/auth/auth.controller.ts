@@ -1,5 +1,5 @@
 import type { Request, Response } from 'express';
-import type { AuthResponse, LoginInput, RegisterInput } from '@fintrack/shared';
+import type { AuthResponse, LoginInput, RegisterInput, UpdateProfileInput } from '@fintrack/shared';
 import { env } from '../../config/env';
 import { unauthorized } from '../../lib/errors';
 import * as authService from './auth.service';
@@ -52,5 +52,11 @@ export async function logoutHandler(req: Request, res: Response) {
 export async function meHandler(req: Request, res: Response) {
   if (!req.userId) throw unauthorized('MISSING_ACCESS_TOKEN', 'Falta el token de acceso');
   const user = await authService.getCurrentUser(req.userId);
+  res.json({ user });
+}
+
+export async function updateMeHandler(req: Request, res: Response) {
+  if (!req.userId) throw unauthorized('MISSING_ACCESS_TOKEN', 'Falta el token de acceso');
+  const user = await authService.updateProfile(req.userId, req.body as UpdateProfileInput);
   res.json({ user });
 }

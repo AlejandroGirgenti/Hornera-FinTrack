@@ -39,7 +39,10 @@ export function CategoriesPage() {
       {isPending ? (
         <Card role="status" aria-label="Cargando categorías" className="space-y-4">
           {[0, 1, 2, 3].map((item) => (
-            <div key={item} className="h-8 animate-pulse rounded bg-slate-200 dark:bg-slate-800" />
+            <div
+              key={item}
+              className="h-8 animate-pulse rounded bg-slate-200/70 dark:bg-white/10"
+            />
           ))}
         </Card>
       ) : isError ? (
@@ -60,7 +63,7 @@ export function CategoriesPage() {
                   <button
                     type="button"
                     onClick={() => setDialog({ kind: 'form', category: null, type: section.type })}
-                    className="text-sm font-medium text-indigo-600 hover:underline dark:text-indigo-400"
+                    className="text-sm font-medium text-accent-600 hover:underline dark:text-accent-300"
                   >
                     Agregar
                   </button>
@@ -68,7 +71,7 @@ export function CategoriesPage() {
                 {items.length === 0 ? (
                   <p className="mt-3 text-sm text-slate-500 dark:text-slate-400">{section.empty}</p>
                 ) : (
-                  <ul className="mt-2 divide-y divide-slate-200 dark:divide-slate-800">
+                  <ul className="mt-2 divide-y divide-slate-200/70 dark:divide-white/10">
                     {items.map((category) => (
                       <li key={category.id} className="flex items-center gap-3 py-2">
                         <span

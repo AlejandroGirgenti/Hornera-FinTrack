@@ -16,21 +16,24 @@ export function TransactionList({
   onDelete,
 }: TransactionListProps) {
   return (
-    <ul className="divide-y divide-slate-200 dark:divide-slate-800">
+    <ul className="divide-y divide-slate-200/70 dark:divide-white/10">
       {transactions.map((transaction) => {
         const isIncome = transaction.type === 'INCOME';
         const title = transaction.note ?? transaction.category.name;
         const foreign = transaction.currency !== baseCurrency;
 
         return (
-          <li key={transaction.id} className="flex items-center gap-3 py-3">
+          <li
+            key={transaction.id}
+            className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-x-3 py-3 sm:grid-cols-[auto_minmax(0,1fr)_auto_auto]"
+          >
             <span
               className="size-3 shrink-0 rounded-full"
               style={{ backgroundColor: transaction.category.color }}
               aria-hidden="true"
             />
-            <div className="min-w-0 flex-1">
-              <p className="truncate text-sm font-medium">{title}</p>
+            <div className="min-w-0">
+              <p className="line-clamp-2 wrap-break-word text-sm font-medium">{title}</p>
               <p className="truncate text-xs text-slate-500 dark:text-slate-400">
                 {transaction.note ? `${transaction.category.name} · ` : ''}
                 {formatDate(transaction.date)}
@@ -58,6 +61,7 @@ export function TransactionList({
               label={title}
               onEdit={() => onEdit(transaction)}
               onDelete={() => onDelete(transaction)}
+              className="col-span-3 -mb-1 -mt-0.5 justify-self-end sm:col-span-1 sm:m-0"
             />
           </li>
         );

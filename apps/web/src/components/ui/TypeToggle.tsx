@@ -21,12 +21,12 @@ export function TypeToggle({ value, onChange, disabled = false }: TypeToggleProp
         {OPTIONS.map((option) => (
           <label
             key={option.value}
-            className={`flex items-center justify-center rounded-lg border px-3 py-2 text-sm font-medium has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-indigo-500 ${
+            className={`flex items-center justify-center rounded-lg border px-3 py-2 text-sm font-medium has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-accent-500 ${
               value === option.value
                 ? option.value === 'INCOME'
                   ? 'border-emerald-500 bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300'
                   : 'border-rose-500 bg-rose-50 text-rose-700 dark:bg-rose-950 dark:text-rose-300'
-                : 'border-slate-300 text-slate-600 dark:border-slate-700 dark:text-slate-300'
+                : 'border-slate-300/80 text-slate-600 dark:border-white/10 dark:text-slate-300'
             } ${disabled ? 'cursor-not-allowed opacity-60' : 'cursor-pointer'}`}
           >
             <input

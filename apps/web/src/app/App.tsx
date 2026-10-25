@@ -4,6 +4,7 @@ import { LoginPage } from '../features/auth/LoginPage';
 import { RegisterPage } from '../features/auth/RegisterPage';
 import { GuestRoute, ProtectedRoute } from '../features/auth/routes';
 import { CategoriesPage } from '../features/categories/CategoriesPage';
+import { SettingsPage } from '../features/settings/SettingsPage';
 import { TransactionsPage } from '../features/transactions/TransactionsPage';
 import { AppLayout } from './AppLayout';
 import { NotFoundPage } from './NotFoundPage';
@@ -21,6 +22,7 @@ export function App() {
           <Route index element={<DashboardPage />} />
           <Route path="movimientos" element={<TransactionsPage />} />
           <Route path="categorias" element={<CategoriesPage />} />
+          <Route path="configuracion" element={<SettingsPage />} />
         </Route>
       </Route>
 

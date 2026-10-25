@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { loginSchema, registerSchema } from '@fintrack/shared';
+import { loginSchema, registerSchema, updateProfileSchema } from '@fintrack/shared';
 import { requireAuth } from '../../middlewares/auth';
 import { credentialsLimiter } from '../../middlewares/rate-limit';
 import { validateBody } from '../../middlewares/validate';
@@ -9,6 +9,7 @@ import {
   meHandler,
   refreshHandler,
   registerHandler,
+  updateMeHandler,
 } from './auth.controller';
 
 export const authRouter = Router();
@@ -18,3 +19,4 @@ authRouter.post('/login', credentialsLimiter, validateBody(loginSchema), loginHa
 authRouter.post('/refresh', refreshHandler);
 authRouter.post('/logout', logoutHandler);
 authRouter.get('/me', requireAuth, meHandler);
+authRouter.patch('/me', requireAuth, validateBody(updateProfileSchema), updateMeHandler);

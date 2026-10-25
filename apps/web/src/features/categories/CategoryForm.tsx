@@ -74,7 +74,7 @@ export function CategoryForm({ category, initialType, onDone }: CategoryFormProp
           {CATEGORY_COLORS.map((option) => (
             <label
               key={option}
-              className={`relative size-8 cursor-pointer rounded-full has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-indigo-500 ${
+              className={`relative size-8 cursor-pointer rounded-full has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-accent-500 ${
                 color.toLowerCase() === option
                   ? 'ring-2 ring-slate-900 ring-offset-2 dark:ring-slate-100 dark:ring-offset-slate-900'
                   : ''
@@ -98,7 +98,7 @@ export function CategoryForm({ category, initialType, onDone }: CategoryFormProp
               type="color"
               value={color}
               onChange={(event) => setColor(event.target.value)}
-              className="size-8 cursor-pointer rounded border border-slate-300 bg-transparent p-0.5 dark:border-slate-700"
+              className="size-8 cursor-pointer rounded border border-slate-300/80 bg-transparent p-0.5 dark:border-white/10"
             />
           </label>
         </div>

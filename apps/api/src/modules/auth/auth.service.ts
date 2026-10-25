@@ -1,5 +1,5 @@
 import type { User } from '@prisma/client';
-import type { AuthUser, LoginInput, RegisterInput } from '@fintrack/shared';
+import type { AuthUser, LoginInput, RegisterInput, UpdateProfileInput } from '@fintrack/shared';
 import { conflict, unauthorized } from '../../lib/errors';
 import { logger } from '../../lib/logger';
 import { prisma } from '../../lib/prisma';
@@ -21,6 +21,7 @@ export function toAuthUser(user: User): AuthUser {
     email: user.email,
     name: user.name,
     baseCurrency: user.baseCurrency,
+    accentColor: user.accentColor,
     createdAt: user.createdAt.toISOString(),
   };
 }
@@ -125,6 +126,15 @@ export async function logout(rawToken: string | undefined): Promise<void> {
 
 export async function getCurrentUser(userId: string): Promise<AuthUser> {
   const user = await prisma.user.findUnique({ where: { id: userId } });
+  if (!user) throw unauthorized('INVALID_ACCESS_TOKEN', 'La cuenta ya no existe');
+  return toAuthUser(user);
+}
+
+/** Actualiza los datos del perfil que la persona puede cambiar (por ahora, el color de acento). */
+export async function updateProfile(userId: string, input: UpdateProfileInput): Promise<AuthUser> {
+  const user = await prisma.user
+    .update({ where: { id: userId }, data: { accentColor: input.accentColor } })
+    .catch(() => null);
   if (!user) throw unauthorized('INVALID_ACCESS_TOKEN', 'La cuenta ya no existe');
   return toAuthUser(user);
 }

@@ -86,7 +86,7 @@ export function RegisterPage() {
         ¿Ya tenés cuenta?{' '}
         <Link
           to="/login"
-          className="font-medium text-indigo-600 hover:underline dark:text-indigo-400"
+          className="font-medium text-accent-600 hover:underline dark:text-accent-300"
         >
           Iniciá sesión
         </Link>

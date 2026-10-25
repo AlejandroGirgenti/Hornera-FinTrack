@@ -50,7 +50,7 @@ export function TransactionFilters({
         <button
           type="button"
           onClick={() => onChange({ month: filters.month ? null : currentMonth() })}
-          className="text-sm font-medium text-indigo-600 hover:underline dark:text-indigo-400"
+          className="text-sm font-medium text-accent-600 hover:underline dark:text-accent-300"
         >
           {filters.month ? 'Ver todo el historial' : 'Filtrar por mes'}
         </button>
@@ -67,7 +67,7 @@ export function TransactionFilters({
             placeholder="Buscar por nota o categoría"
             value={search}
             onChange={(event) => setSearch(event.target.value)}
-            className="block w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 shadow-sm placeholder:text-slate-400 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
+            className="block w-full rounded-lg border border-slate-300/80 bg-white/70 px-3 py-2 text-sm text-slate-900 shadow-sm placeholder:text-slate-400 dark:border-white/10 dark:bg-black/30 dark:text-slate-100"
           />
         </div>
         <Select

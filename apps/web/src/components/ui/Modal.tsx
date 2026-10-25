@@ -33,7 +33,7 @@ export function Modal({ open, onClose, title, children }: ModalProps) {
       onClick={(event) => {
         if (event.target === ref.current) onClose();
       }}
-      className="m-auto w-[calc(100%-2rem)] max-w-md rounded-xl border border-slate-200 bg-white p-0 text-slate-900 shadow-xl backdrop:bg-slate-900/60 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-100"
+      className="glass-strong m-auto w-[calc(100%-2rem)] max-w-md rounded-2xl p-0 text-slate-900 backdrop:bg-black/60 backdrop:backdrop-blur-sm dark:text-slate-100"
     >
       {open && (
         <div className="max-h-[90vh] overflow-y-auto p-5">

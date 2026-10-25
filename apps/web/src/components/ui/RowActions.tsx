@@ -8,7 +8,7 @@ interface RowActionsProps {
 }
 
 const iconButton =
-  'inline-flex size-9 items-center justify-center rounded-lg text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100';
+  'inline-flex size-10 items-center justify-center rounded-lg text-slate-500 transition-colors hover:bg-white/70 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-white/10 dark:hover:text-slate-100';
 
 function Icon({ children }: { children: ReactNode }) {
   return (

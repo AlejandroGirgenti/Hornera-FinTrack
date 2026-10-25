@@ -17,7 +17,7 @@ export function ThemeToggle() {
       onClick={toggle}
       aria-label={next === 'dark' ? 'Activar modo oscuro' : 'Activar modo claro'}
       title={next === 'dark' ? 'Modo oscuro' : 'Modo claro'}
-      className="inline-flex size-9 items-center justify-center rounded-lg border border-slate-300 bg-white text-slate-700 transition-colors hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800"
+      className="inline-flex size-10 items-center justify-center rounded-lg border border-slate-300/70 bg-white/60 text-slate-700 transition-colors hover:bg-white/90 dark:border-white/10 dark:bg-white/5 dark:text-slate-200 dark:hover:bg-white/10"
     >
       <svg
         viewBox="0 0 24 24"

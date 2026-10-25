@@ -23,8 +23,8 @@ export function TrendChart() {
   if (isPending) {
     return (
       <Card role="status" aria-label="Cargando la evolución mensual">
-        <div className="h-5 w-40 animate-pulse rounded bg-slate-200 dark:bg-slate-800" />
-        <div className="mt-6 h-52 animate-pulse rounded bg-slate-200 dark:bg-slate-800" />
+        <div className="h-5 w-40 animate-pulse rounded bg-slate-200/70 dark:bg-white/10" />
+        <div className="mt-6 h-52 animate-pulse rounded bg-slate-200/70 dark:bg-white/10" />
       </Card>
     );
   }

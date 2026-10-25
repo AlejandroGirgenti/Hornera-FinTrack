@@ -29,6 +29,7 @@ model User {
   name         String
   passwordHash String
   baseCurrency Currency @default(ARS)
+  accentColor  String?
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 

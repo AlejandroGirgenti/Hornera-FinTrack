@@ -6,7 +6,7 @@ interface MonthPickerProps {
 }
 
 const navButton =
-  'inline-flex size-9 items-center justify-center rounded-lg border border-slate-300 bg-white text-slate-700 transition-colors hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800';
+  'inline-flex size-10 items-center justify-center rounded-lg border border-slate-300/70 bg-white/60 text-slate-700 transition-colors hover:bg-white/90 disabled:cursor-not-allowed disabled:opacity-40 dark:border-white/10 dark:bg-white/5 dark:text-slate-200 dark:hover:bg-white/10';
 
 function Chevron({ direction }: { direction: 'left' | 'right' }) {
   return (
@@ -58,7 +58,7 @@ export function MonthPicker({ month, onChange }: MonthPickerProps) {
         <button
           type="button"
           onClick={() => onChange(today)}
-          className="rounded-lg px-2 py-1 text-sm font-medium text-indigo-600 hover:underline dark:text-indigo-400"
+          className="rounded-lg px-2 py-1 text-sm font-medium text-accent-600 hover:underline dark:text-accent-300"
         >
           Mes actual
         </button>

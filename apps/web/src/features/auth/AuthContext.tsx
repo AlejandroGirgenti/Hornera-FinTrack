@@ -2,6 +2,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState } 
 import type { ReactNode } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import type { AuthResponse, AuthUser, LoginInput, RegisterInput } from '@fintrack/shared';
+import { applyAccent } from '../../lib/accent';
 import { refreshSession, setAccessToken, setSessionExpiredHandler } from '../../lib/api';
 import { loginRequest, logoutRequest, registerRequest } from './auth-api';
 
@@ -13,6 +14,8 @@ interface AuthContextValue {
   login: (input: LoginInput) => Promise<void>;
   register: (input: RegisterInput) => Promise<void>;
   logout: () => Promise<void>;
+  /** Reemplaza el usuario en memoria (por ejemplo, después de cambiar su configuración). */
+  updateUser: (user: AuthUser) => void;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -72,8 +75,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, [clearSession]);
 
+  // El color de acento es de cada cuenta: se aplica al iniciar sesión y se limpia al cerrarla.
+  // Mientras se recupera la sesión se deja el que guardó el script de index.html (sin parpadeo).
+  useEffect(() => {
+    if (status === 'authenticated') applyAccent(user?.accentColor ?? null);
+    if (status === 'unauthenticated') applyAccent(null);
+  }, [user, status]);
+
   const value = useMemo(
-    () => ({ user, status, login, register, logout }),
+    () => ({ user, status, login, register, logout, updateUser: setUser }),
     [user, status, login, register, logout],
   );
 

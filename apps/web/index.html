@@ -3,8 +3,12 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="FinTrack: dashboard de finanzas personales" />
-    <title>FinTrack</title>
+    <meta
+      name="description"
+      content="Hornera FinTrack: tus finanzas personales, ladrillo a ladrillo"
+    />
+    <meta name="theme-color" content="#0b0a10" />
+    <title>Hornera FinTrack</title>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <script>
       // Aplica el tema antes de pintar para evitar un destello de tema claro
@@ -15,6 +19,11 @@
             ? stored === 'dark'
             : window.matchMedia('(prefers-color-scheme: dark)').matches;
           if (dark) document.documentElement.classList.add('dark');
+          // y el color de acento que eligió la persona (se guarda en lib/accent.ts)
+          var accent = localStorage.getItem('fintrack-accent');
+          if (accent && /^#[0-9a-f]{6}$/i.test(accent)) {
+            document.documentElement.style.setProperty('--accent', accent);
+          }
         } catch (e) {}
       })();
     </script>

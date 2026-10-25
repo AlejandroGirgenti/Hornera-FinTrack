@@ -24,8 +24,8 @@ export function Field({ label, error, hint, className = '', ...input }: FieldPro
         id={id}
         aria-invalid={error ? true : undefined}
         aria-describedby={describedBy || undefined}
-        className={`block w-full rounded-lg border bg-white px-3 py-2 text-sm text-slate-900 shadow-sm placeholder:text-slate-400 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-indigo-500 dark:bg-slate-900 dark:text-slate-100 ${
-          error ? 'border-rose-500' : 'border-slate-300 dark:border-slate-700'
+        className={`block w-full rounded-lg border bg-white/70 px-3 py-2 text-sm text-slate-900 shadow-sm placeholder:text-slate-400 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-accent-500 dark:bg-black/30 dark:text-slate-100 ${
+          error ? 'border-rose-500' : 'border-slate-300/80 dark:border-white/10'
         } ${className}`}
       />
       {hint && !error && (

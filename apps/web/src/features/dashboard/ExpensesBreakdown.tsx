@@ -11,8 +11,8 @@ export function ExpensesBreakdown({ month }: { month: string }) {
   if (isPending) {
     return (
       <Card role="status" aria-label="Cargando gastos por categoría">
-        <div className="h-5 w-40 animate-pulse rounded bg-slate-200 dark:bg-slate-800" />
-        <div className="mx-auto mt-6 size-48 animate-pulse rounded-full bg-slate-200 dark:bg-slate-800" />
+        <div className="h-5 w-40 animate-pulse rounded bg-slate-200/70 dark:bg-white/10" />
+        <div className="mx-auto mt-6 size-48 animate-pulse rounded-full bg-slate-200/70 dark:bg-white/10" />
       </Card>
     );
   }
@@ -81,7 +81,7 @@ export function ExpensesBreakdown({ month }: { month: string }) {
                   aria-hidden="true"
                 />
                 <div className="min-w-0 flex-1">
-                  <p className="break-words">{item.category.name}</p>
+                  <p className="wrap-break-word">{item.category.name}</p>
                   <p className="text-xs tabular-nums text-slate-500 dark:text-slate-400">
                     {formatPercent(item.percentage)}
                   </p>
