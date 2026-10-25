@@ -14,15 +14,6 @@ export function SettingsPage() {
         </p>
       </div>
 
-      <Card>
-        <h2 className="text-base font-semibold">Color de la aplicación</h2>
-        <p className="mb-4 mt-1 text-sm text-slate-500 dark:text-slate-400">
-          Cambia botones, enlaces, fondo y detalles. Se guarda en tu cuenta y te acompaña en todos
-          tus dispositivos.
-        </p>
-        <AccentPicker />
-      </Card>
-
       {user && (
         <Card>
           <h2 className="text-base font-semibold">Tu cuenta</h2>
@@ -42,6 +33,15 @@ export function SettingsPage() {
           </dl>
         </Card>
       )}
+
+      <Card>
+        <h2 className="text-base font-semibold">Color de la aplicación</h2>
+        <p className="mb-4 mt-1 text-sm text-slate-500 dark:text-slate-400">
+          Cambia botones, enlaces, fondo y detalles. Se guarda en tu cuenta y te acompaña en todos
+          tus dispositivos.
+        </p>
+        <AccentPicker />
+      </Card> 
     </div>
   );
 }

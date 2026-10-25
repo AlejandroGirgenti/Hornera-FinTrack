@@ -36,7 +36,7 @@ export function Modal({ open, onClose, title, children }: ModalProps) {
       className="glass-strong m-auto w-[calc(100%-2rem)] max-w-md rounded-2xl p-0 text-slate-900 backdrop:bg-black/60 backdrop:backdrop-blur-sm dark:text-slate-100"
     >
       {open && (
-        <div className="max-h-[90vh] overflow-y-auto p-5">
+        <div className="max-h-[90dvh] overflow-y-auto p-4 sm:p-5">
           <h2 id={titleId} className="mb-4 text-lg font-semibold">
             {title}
           </h2>

@@ -26,7 +26,7 @@ export function CategoriesPage() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Categorías</h1>
+          <h1 className="text-xl font-bold tracking-tight sm:text-2xl">Categorías</h1>
           <p className="text-sm text-slate-500 dark:text-slate-400">
             Organizá tus ingresos y gastos; el color se usa en los gráficos
           </p>

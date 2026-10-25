@@ -46,7 +46,7 @@ export function AccentPicker() {
 
   return (
     <div className="space-y-5">
-      <div role="radiogroup" aria-label="Colores sugeridos" className="grid gap-2 sm:grid-cols-2">
+      <div role="radiogroup" aria-label="Colores sugeridos" className="grid grid-cols-2 gap-2">
         {ACCENT_PRESETS.map((preset) => {
           const selected = preset.value === current;
           return (
@@ -59,7 +59,7 @@ export function AccentPicker() {
               onClick={() => choose(preset.value === DEFAULT_ACCENT_COLOR ? null : preset.value)}
               className={`flex items-center gap-3 rounded-xl border px-3 py-2.5 text-left text-sm transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent-500 disabled:opacity-60 ${
                 selected
-                  ? 'border-accent-500 bg-accent-500/10 font-medium'
+                  ? 'border-accent-500 bg-accent-500/10 font-medium ring-1 ring-accent-500'
                   : 'border-slate-300/70 bg-white/40 hover:bg-white/70 dark:border-white/10 dark:bg-white/5 dark:hover:bg-white/10'
               }`}
             >
@@ -68,9 +68,11 @@ export function AccentPicker() {
                 className="size-6 shrink-0 rounded-full border border-black/10 dark:border-white/20"
                 style={{ backgroundColor: preset.value }}
               />
-              <span className="flex-1">{preset.name}</span>
+              <span className="min-w-0 flex-1 leading-tight">{preset.name}</span>
               {selected && (
-                <span className="text-xs text-accent-600 dark:text-accent-300">En uso</span>
+                <span className="hidden text-xs text-accent-600 sm:inline dark:text-accent-300">
+                  En uso
+                </span>
               )}
             </button>
           );
@@ -110,7 +112,7 @@ export function AccentPicker() {
             variant="secondary"
             loading={save.isPending}
             onClick={applyCustom}
-            className="mt-6"
+            className="w-full sm:mt-6 sm:w-auto"
           >
             Usar este color
           </Button>
@@ -141,7 +143,7 @@ export function AccentPicker() {
           variant="secondary"
           disabled={isDefault || save.isPending}
           onClick={() => choose(null)}
-          className="ml-auto"
+          className="w-full sm:ml-auto sm:w-auto"
         >
           Volver a Midnight purple
         </Button>

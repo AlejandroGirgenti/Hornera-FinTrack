@@ -121,35 +121,26 @@ export function TransactionForm({ transaction, baseCurrency, onDone }: Transacti
         <Select
           label="Moneda"
           value={currency}
-          onChange={(event) => {
-            const next = event.target.value as Currency;
+          options={CURRENCIES.map((value) => ({ value, label: value }))}
+          onChange={(next) => {
             setCurrency(next);
             // Al pasar a dólares sin cotización cargada, se propone la automática
             if (canAutoRate(baseCurrency, next) && rate.trim() === '') setRateSource('oficial');
           }}
           error={errors.currency}
-        >
-          {CURRENCIES.map((value) => (
-            <option key={value} value={value}>
-              {value}
-            </option>
-          ))}
-        </Select>
+        />
       </div>
 
       {needsRate && canAutoRate(baseCurrency, currency) && (
         <Select
           label="Tipo de dólar"
           value={rateSource}
-          onChange={(event) => setRateSource(event.target.value as RateSource)}
-        >
-          {USD_RATE_TYPES.map((value) => (
-            <option key={value} value={value}>
-              {USD_RATE_LABELS[value]}
-            </option>
-          ))}
-          <option value="manual">Ingresar la cotización a mano</option>
-        </Select>
+          options={[
+            ...USD_RATE_TYPES.map((value) => ({ value, label: USD_RATE_LABELS[value] })),
+            { value: 'manual' as const, label: 'Ingresar la cotización a mano' },
+          ]}
+          onChange={setRateSource}
+        />
       )}
 
       {needsRate && (
@@ -191,17 +182,12 @@ export function TransactionForm({ transaction, baseCurrency, onDone }: Transacti
       <Select
         label="Categoría"
         value={categoryId}
-        onChange={(event) => setCategoryId(event.target.value)}
+        options={typeCategories.map((category) => ({ value: category.id, label: category.name }))}
+        placeholder={categories.isPending ? 'Cargando…' : 'Elegí una categoría'}
+        onChange={setCategoryId}
         error={errors.categoryId ?? errors.category}
         disabled={categories.isPending}
-      >
-        <option value="">{categories.isPending ? 'Cargando…' : 'Elegí una categoría'}</option>
-        {typeCategories.map((category) => (
-          <option key={category.id} value={category.id}>
-            {category.name}
-          </option>
-        ))}
-      </Select>
+      />
       {categories.isError && (
         <p role="alert" className="text-xs text-rose-600 dark:text-rose-400">
           No se pudieron cargar las categorías.{' '}

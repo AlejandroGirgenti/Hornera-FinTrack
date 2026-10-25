@@ -70,12 +70,18 @@ export function TransactionsPage() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Movimientos</h1>
+          <h1 className="text-xl font-bold tracking-tight sm:text-2xl">Movimientos</h1>
           <p className="text-sm text-slate-500 dark:text-slate-400">
             Tus ingresos y gastos, con filtros y búsqueda
           </p>
         </div>
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="grid w-full grid-cols-2 gap-2 sm:flex sm:w-auto sm:flex-wrap sm:items-center">
+          <Button
+            onClick={() => setDialog({ kind: 'form', transaction: null })}
+            className="order-first col-span-2 sm:order-last sm:col-span-1"
+          >
+            Nuevo movimiento
+          </Button>
           {(
             [
               { format: 'xlsx', label: 'Exportar Excel' },
@@ -92,9 +98,6 @@ export function TransactionsPage() {
               {option.label}
             </Button>
           ))}
-          <Button onClick={() => setDialog({ kind: 'form', transaction: null })}>
-            Nuevo movimiento
-          </Button>
         </div>
       </div>
 

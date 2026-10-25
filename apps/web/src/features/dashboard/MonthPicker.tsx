@@ -30,7 +30,7 @@ export function MonthPicker({ month, onChange }: MonthPickerProps) {
   const isCurrent = month >= today;
 
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex w-full flex-wrap items-center gap-2 sm:w-auto">
       <button
         type="button"
         className={navButton}
@@ -41,7 +41,7 @@ export function MonthPicker({ month, onChange }: MonthPickerProps) {
       </button>
       <p
         aria-live="polite"
-        className="min-w-40 text-center text-sm font-semibold capitalize tabular-nums"
+        className="min-w-0 flex-1 text-center text-sm font-semibold capitalize tabular-nums sm:min-w-40 sm:flex-none"
       >
         {formatMonthLabel(month)}
       </p>

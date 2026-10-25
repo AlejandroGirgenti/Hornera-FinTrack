@@ -14,7 +14,10 @@ export function Pagination({ page, pageSize, total, totalPages, onChange }: Pagi
   const last = Math.min(page * pageSize, total);
 
   return (
-    <nav aria-label="Paginación" className="flex items-center justify-between gap-3">
+    <nav
+      aria-label="Paginación"
+      className="flex flex-wrap items-center justify-center gap-x-3 gap-y-2 sm:justify-between"
+    >
       <p className="text-sm text-slate-500 dark:text-slate-400">
         {first}–{last} de {total}
       </p>

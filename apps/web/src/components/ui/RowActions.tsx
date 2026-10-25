@@ -5,6 +5,7 @@ interface RowActionsProps {
   label: string;
   onEdit: () => void;
   onDelete: () => void;
+  className?: string;
 }
 
 const iconButton =
@@ -28,9 +29,9 @@ function Icon({ children }: { children: ReactNode }) {
 }
 
 /** Botones de editar y eliminar de una fila de lista. */
-export function RowActions({ label, onEdit, onDelete }: RowActionsProps) {
+export function RowActions({ label, onEdit, onDelete, className = '' }: RowActionsProps) {
   return (
-    <div className="flex shrink-0">
+    <div className={`flex shrink-0 ${className}`}>
       <button type="button" className={iconButton} onClick={onEdit} aria-label={`Editar ${label}`}>
         <Icon>
           <path d="M12 20h9" />

@@ -7,6 +7,12 @@ import { useCategories } from '../categories/useCategories';
 import { MonthPicker } from '../dashboard/MonthPicker';
 import type { TransactionFilters as Filters } from './filters';
 
+const TYPE_OPTIONS: { value: Filters['type']; label: string }[] = [
+  { value: '', label: 'Todos los tipos' },
+  { value: 'INCOME', label: 'Ingresos' },
+  { value: 'EXPENSE', label: 'Gastos' },
+];
+
 interface TransactionFiltersProps {
   filters: Filters;
   /** Cambia solo los filtros indicados (la página vuelve a la 1 salvo que se indique otra). */
@@ -56,8 +62,8 @@ export function TransactionFilters({
         </button>
       </div>
 
-      <div className="grid gap-3 sm:grid-cols-[1fr_10rem_12rem]">
-        <div className="space-y-1">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-[1fr_10rem_12rem]">
+        <div className="col-span-2 space-y-1 sm:col-span-1">
           <label htmlFor="buscar" className="sr-only">
             Buscar por nota o categoría
           </label>
@@ -74,32 +80,25 @@ export function TransactionFilters({
           label="Tipo"
           hideLabel
           value={filters.type}
-          onChange={(event) => {
-            const type = event.target.value as Filters['type'];
+          options={TYPE_OPTIONS}
+          onChange={(type) => {
             // Si la categoría elegida es de otro tipo, deja de aplicar
             const keep = categoryOptions.some(
               (category) => category.id === filters.categoryId && (!type || category.type === type),
             );
             onChange({ type, categoryId: keep ? filters.categoryId : '' });
           }}
-        >
-          <option value="">Todos los tipos</option>
-          <option value="INCOME">Ingresos</option>
-          <option value="EXPENSE">Gastos</option>
-        </Select>
+        />
         <Select
           label="Categoría"
           hideLabel
           value={filters.categoryId}
-          onChange={(event) => onChange({ categoryId: event.target.value })}
-        >
-          <option value="">Todas las categorías</option>
-          {categoryOptions.map((category) => (
-            <option key={category.id} value={category.id}>
-              {category.name}
-            </option>
-          ))}
-        </Select>
+          options={[
+            { value: '', label: 'Todas las categorías' },
+            ...categoryOptions.map((category) => ({ value: category.id, label: category.name })),
+          ]}
+          onChange={(categoryId) => onChange({ categoryId })}
+        />
       </div>
 
       {isFiltered && (

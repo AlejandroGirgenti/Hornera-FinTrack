@@ -231,7 +231,7 @@ export function Select<T extends string>({
           popover="manual"
           // Evita que tocar una opción le saque el foco al botón
           onMouseDown={(event) => event.preventDefault()}
-          className="glass-strong m-0 overflow-y-auto rounded-xl p-1 text-slate-900 dark:text-slate-100"
+          className="surface-solid m-0 overflow-y-auto rounded-xl p-1 text-slate-900 dark:text-slate-100"
         >
           {options.length === 0 && (
             <li className="px-3 py-3 text-sm text-slate-500 dark:text-slate-400">
