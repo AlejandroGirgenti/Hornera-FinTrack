@@ -231,13 +231,13 @@ export async function changePassword(
 
   await prisma.$transaction([
     prisma.user.update({ where: { id: userId }, data: { passwordHash } }),
-    prisma.refreshToken.updateMany({
+    // Se BORRAN (no se marcan como revocados): un token revocado que alguien vuelve a presentar
+    // se toma como robo y cierra todas las sesiones, y la actual tiene que seguir abierta
+    prisma.refreshToken.deleteMany({
       where: {
         userId,
-        revokedAt: null,
         ...(keepTokenHash ? { tokenHash: { not: keepTokenHash } } : {}),
       },
-      data: { revokedAt: new Date() },
     }),
     prisma.passwordResetToken.deleteMany({ where: { userId } }),
   ]);
@@ -311,10 +311,8 @@ export async function resetPassword(input: ResetPasswordInput): Promise<void> {
     if (claimed.count === 0) throw invalid();
 
     await tx.user.update({ where: { id: stored.userId }, data: { passwordHash } });
-    await tx.refreshToken.updateMany({
-      where: { userId: stored.userId, revokedAt: null },
-      data: { revokedAt: new Date() },
-    });
+    // Todas las sesiones se cierran; se borran para que no disparen la detección de reutilización
+    await tx.refreshToken.deleteMany({ where: { userId: stored.userId } });
     await tx.passwordResetToken.deleteMany({
       where: { userId: stored.userId, id: { not: stored.id } },
     });
