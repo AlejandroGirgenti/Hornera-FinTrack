@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import type { FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router';
-import { registerSchema } from '@fintrack/shared';
+import { DEFAULT_COUNTRY, registerFormSchema } from '@fintrack/shared';
 import { Button } from '../../components/ui/Button';
 import { Field } from '../../components/ui/Field';
+import { Select } from '../../components/ui/Select';
+import { countryOptions } from '../../lib/countries';
 import { useAuth } from './AuthContext';
 import { AuthLayout } from './AuthLayout';
 import { fromApiError, fromIssues } from './form-errors';
@@ -16,6 +18,8 @@ export function RegisterPage() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [country, setCountry] = useState<string>(DEFAULT_COUNTRY);
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
   const [formError, setFormError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -24,7 +28,13 @@ export function RegisterPage() {
     event.preventDefault();
     setFormError(null);
 
-    const parsed = registerSchema.safeParse({ name, email, password });
+    const parsed = registerFormSchema.safeParse({
+      name,
+      email,
+      password,
+      confirmPassword,
+      country,
+    });
     if (!parsed.success) {
       setFieldErrors(fromIssues(parsed.error.issues));
       return;
@@ -33,7 +43,9 @@ export function RegisterPage() {
 
     setSubmitting(true);
     try {
-      await register(parsed.data);
+      // Repetir la contraseña solo se valida acá: no viaja a la API
+      const { confirmPassword: _confirm, ...input } = parsed.data;
+      await register(input);
       navigate('/', { replace: true });
     } catch (error) {
       const result = fromApiError(error);
@@ -77,6 +89,22 @@ export function RegisterPage() {
           value={password}
           onChange={(event) => setPassword(event.target.value)}
           error={fieldErrors['password']}
+        />
+        <Field
+          label="Repetir contraseña"
+          type="password"
+          autoComplete="new-password"
+          value={confirmPassword}
+          onChange={(event) => setConfirmPassword(event.target.value)}
+          error={fieldErrors['confirmPassword']}
+        />
+        <Select
+          label="País"
+          value={country}
+          options={countryOptions()}
+          placeholder="Elegí tu país"
+          onChange={setCountry}
+          error={fieldErrors['country']}
         />
         <Button type="submit" loading={submitting} className="w-full">
           Crear cuenta

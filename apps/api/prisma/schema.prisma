@@ -29,6 +29,7 @@ model User {
   name         String
   passwordHash String
   baseCurrency Currency @default(ARS)
+  country      String?
   accentColor  String?
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
@@ -38,6 +39,7 @@ model User {
   budgets        Budget[]
   recurringRules RecurringRule[]
   refreshTokens  RefreshToken[]
+  passwordResets PasswordResetToken[]
 }
 
 model RefreshToken {
@@ -45,6 +47,20 @@ model RefreshToken {
   tokenHash String    @unique
   expiresAt DateTime
   revokedAt DateTime?
+  createdAt DateTime  @default(now())
+  userId    String
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+/// Enlace de "olvidé mi contraseña": se guarda hasheado, vence y se usa una sola vez.
+model PasswordResetToken {
+  id        String    @id @default(cuid())
+  tokenHash String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
   createdAt DateTime  @default(now())
   userId    String
 

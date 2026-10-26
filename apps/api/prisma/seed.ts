@@ -4,8 +4,8 @@
  *
  *   pnpm db:seed
  */
-import type { Prisma } from '@prisma/client';
 import { PrismaClient } from '@prisma/client';
+import type { Prisma } from '@prisma/client';
 import { DEFAULT_CATEGORIES } from '../src/modules/auth/default-categories';
 import { hashPassword } from '../src/modules/auth/password';
 
@@ -37,6 +37,7 @@ async function main() {
     data: {
       email: DEMO_EMAIL,
       name: 'Usuario Demo',
+      country: 'AR',
       passwordHash: await hashPassword(DEMO_PASSWORD),
     },
   });

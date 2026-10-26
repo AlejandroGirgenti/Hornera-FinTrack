@@ -43,3 +43,9 @@ export function generateRefreshToken() {
     expiresAt: new Date(Date.now() + env.REFRESH_TOKEN_TTL_DAYS * DAY_MS),
   };
 }
+
+/** Token aleatorio de un solo uso (256 bits), por ejemplo para el enlace de recuperar contraseña. */
+export function generateOneTimeToken() {
+  const token = randomBytes(32).toString('base64url');
+  return { token, tokenHash: hashToken(token) };
+}

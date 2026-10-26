@@ -1,8 +1,7 @@
 import { useMutation } from '@tanstack/react-query';
-import type { AuthUser, UpdateProfileInput } from '@fintrack/shared';
 import { applyAccent } from '../../lib/accent';
-import { api } from '../../lib/api';
 import { useAuth } from '../auth/AuthContext';
+import { updateProfileRequest } from './settings-api';
 
 /**
  * Guarda el color de acento. Se aplica en pantalla al instante (así se ve el resultado sin
@@ -12,8 +11,7 @@ export function useUpdateAccent() {
   const { user, updateUser } = useAuth();
 
   return useMutation({
-    mutationFn: async (input: UpdateProfileInput) =>
-      (await api<{ user: AuthUser }>('/auth/me', { method: 'PATCH', body: input })).user,
+    mutationFn: (input: { accentColor: string | null }) => updateProfileRequest(input),
     onMutate: (input) => {
       applyAccent(input.accentColor);
     },

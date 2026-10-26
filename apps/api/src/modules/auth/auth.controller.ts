@@ -1,10 +1,20 @@
 import type { Request, Response } from 'express';
-import type { AuthResponse, LoginInput, RegisterInput, UpdateProfileInput } from '@fintrack/shared';
+import type {
+  AuthResponse,
+  ChangeEmailInput,
+  ChangePasswordInput,
+  DeleteAccountInput,
+  ForgotPasswordInput,
+  LoginInput,
+  RegisterInput,
+  ResetPasswordInput,
+  UpdateProfileInput,
+} from '@fintrack/shared';
 import { env } from '../../config/env';
 import { unauthorized } from '../../lib/errors';
 import * as authService from './auth.service';
 import type { Session } from './auth.service';
-import { REFRESH_COOKIE_NAME, REFRESH_COOKIE_PATH } from './tokens';
+import { REFRESH_COOKIE_NAME, REFRESH_COOKIE_PATH, hashToken } from './tokens';
 
 const cookieBase = {
   httpOnly: true,
@@ -59,4 +69,42 @@ export async function updateMeHandler(req: Request, res: Response) {
   if (!req.userId) throw unauthorized('MISSING_ACCESS_TOKEN', 'Falta el token de acceso');
   const user = await authService.updateProfile(req.userId, req.body as UpdateProfileInput);
   res.json({ user });
+}
+
+export async function changeEmailHandler(req: Request, res: Response) {
+  if (!req.userId) throw unauthorized('MISSING_ACCESS_TOKEN', 'Falta el token de acceso');
+  const user = await authService.changeEmail(req.userId, req.body as ChangeEmailInput);
+  res.json({ user });
+}
+
+export async function changePasswordHandler(req: Request, res: Response) {
+  if (!req.userId) throw unauthorized('MISSING_ACCESS_TOKEN', 'Falta el token de acceso');
+  // La cookie del refresh token identifica esta sesión: es la única que sigue abierta
+  const current = req.cookies?.[REFRESH_COOKIE_NAME] as string | undefined;
+  await authService.changePassword(
+    req.userId,
+    req.body as ChangePasswordInput,
+    current ? hashToken(current) : null,
+  );
+  res.status(204).end();
+}
+
+export async function deleteMeHandler(req: Request, res: Response) {
+  if (!req.userId) throw unauthorized('MISSING_ACCESS_TOKEN', 'Falta el token de acceso');
+  await authService.deleteAccount(req.userId, (req.body as DeleteAccountInput).password);
+  res.clearCookie(REFRESH_COOKIE_NAME, cookieBase);
+  res.status(204).end();
+}
+
+export async function forgotPasswordHandler(req: Request, res: Response) {
+  await authService.requestPasswordReset((req.body as ForgotPasswordInput).email);
+  // Misma respuesta exista o no la cuenta
+  res.status(202).json({
+    message: 'Si el email tiene una cuenta, te enviamos un enlace para restablecer la contraseña.',
+  });
+}
+
+export async function resetPasswordHandler(req: Request, res: Response) {
+  await authService.resetPassword(req.body as ResetPasswordInput);
+  res.status(204).end();
 }

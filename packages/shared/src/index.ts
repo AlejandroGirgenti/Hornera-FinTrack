@@ -1,5 +1,6 @@
 export * from './enums';
 export * from './auth';
+export * from './countries';
 export * from './categories';
 export * from './common';
 export * from './transactions';

@@ -29,3 +29,16 @@ export const credentialsLimiter = rateLimit({
   message: tooManyRequests,
   skip: () => env.isTest,
 });
+
+/**
+ * Límite para pedir o usar el enlace de recuperar contraseña. Cuenta todos los pedidos (siempre
+ * responden bien, para no revelar si el email existe) y así frena el envío masivo de correos.
+ */
+export const passwordResetLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 5,
+  standardHeaders: 'draft-7',
+  legacyHeaders: false,
+  message: tooManyRequests,
+  skip: () => env.isTest,
+});

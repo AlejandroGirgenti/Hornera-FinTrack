@@ -9,6 +9,11 @@ const envSchema = z.object({
   REFRESH_TOKEN_TTL_DAYS: z.coerce.number().int().positive().default(7),
   /** Uno o varios orígenes permitidos, separados por coma. */
   CORS_ORIGIN: z.string().default('http://localhost:5173'),
+  /** Dirección pública del frontend: se usa para armar el enlace de recuperar contraseña. */
+  APP_URL: z.string().url().optional(),
+  /** Para enviar correos reales (resend.com). Sin esta clave, los correos solo se muestran en el log. */
+  RESEND_API_KEY: z.string().min(1).optional(),
+  MAIL_FROM: z.string().min(3).default('Hornera FinTrack <onboarding@resend.dev>'),
   LOG_LEVEL: z.enum(['fatal', 'error', 'warn', 'info', 'debug', 'trace', 'silent']).default('info'),
   /** Solo para sobrescribir el valor por defecto según el entorno. */
   COOKIE_SAMESITE: z.enum(['lax', 'strict', 'none']).optional(),
@@ -38,6 +43,10 @@ export const env = {
   corsOrigins: raw.CORS_ORIGIN.split(',')
     .map((origin) => origin.trim())
     .filter(Boolean),
+  appUrl: (raw.APP_URL ?? raw.CORS_ORIGIN.split(',')[0]?.trim() ?? 'http://localhost:5173').replace(
+    /\/+$/,
+    '',
+  ),
   /**
    * En producción el frontend y la API suelen estar en dominios distintos, por eso la cookie
    * del refresh token usa SameSite=None; Secure. En desarrollo (http://localhost) alcanza con Lax.
