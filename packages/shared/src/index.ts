@@ -2,6 +2,7 @@ export * from './enums';
 export * from './auth';
 export * from './countries';
 export * from './categories';
+export * from './budgets';
 export * from './common';
 export * from './transactions';
 export * from './reports';

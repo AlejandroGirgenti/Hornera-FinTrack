@@ -7,6 +7,7 @@ import {
   USD_RATE_TYPES,
 } from '@fintrack/shared';
 import type { Currency, TransactionDto, TransactionType } from '@fintrack/shared';
+import { Alert } from '../../components/ui/Alert';
 import { Button } from '../../components/ui/Button';
 import { Field } from '../../components/ui/Field';
 import { Select } from '../../components/ui/Select';
@@ -14,6 +15,8 @@ import { TypeToggle } from '../../components/ui/TypeToggle';
 import { todayInBuenosAires } from '../../lib/dates';
 import { formatDateTime, formatMoney } from '../../lib/format';
 import { fromApiError, fromIssues } from '../auth/form-errors';
+import { budgetWarning } from '../budgets/budget-warning';
+import { useBudgets } from '../budgets/useBudgets';
 import { useCategories } from '../categories/useCategories';
 import type { FieldErrors } from '../auth/form-errors';
 import { normalizeNumberInput } from './amount-input';
@@ -59,6 +62,31 @@ export function TransactionForm({ transaction, baseCurrency, onDone }: Transacti
   // Equivalente aproximado en moneda base: solo orientativo, el servidor calcula el definitivo
   const preview = Number(normalizeNumberInput(amount)) * Number(normalizeNumberInput(rate));
   const showPreview = needsRate && Number.isFinite(preview) && preview > 0;
+
+  // Aviso de presupuesto: usa los datos del mes ya cargados, no frena el guardado
+  const budgetMonth = /^\d{4}-\d{2}/.test(date) ? date.slice(0, 7) : '';
+  const budgets = useBudgets(budgetMonth, { enabled: type === 'EXPENSE' && budgetMonth !== '' });
+  const adding = needsRate
+    ? showPreview
+      ? preview.toFixed(2)
+      : null
+    : Number(normalizeNumberInput(amount)) > 0
+      ? Number(normalizeNumberInput(amount)).toFixed(2)
+      : null;
+  const warning = budgetWarning({
+    budgets: budgets.data,
+    month: budgetMonth,
+    type,
+    categoryId,
+    adding,
+    editing: transaction
+      ? {
+          categoryId: transaction.category.id,
+          month: transaction.date.slice(0, 7),
+          amountInBase: transaction.amountInBase,
+        }
+      : null,
+  });
 
   function changeType(next: TransactionType) {
     setType(next);
@@ -200,6 +228,15 @@ export function TransactionForm({ transaction, baseCurrency, onDone }: Transacti
         <p className="text-xs text-slate-500 dark:text-slate-400">
           Todavía no tenés categorías de {type === 'INCOME' ? 'ingresos' : 'gastos'}.
         </p>
+      )}
+
+      {warning && (
+        <Alert variant="warning">
+          <strong className="font-semibold">Ojo con el presupuesto.</strong> Con este gasto superás
+          el límite de {warning.categoryName} por {formatMoney(warning.over, baseCurrency)} (
+          {formatMoney(warning.total, baseCurrency)} de {formatMoney(warning.limit, baseCurrency)}).
+          Igual lo podés guardar.
+        </Alert>
       )}
 
       <Field

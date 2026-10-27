@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  formatAmount,
   formatCompact,
   formatDate,
   formatDateTime,
@@ -53,5 +54,21 @@ describe('formatCompact / formatPercent', () => {
   it('formatea porcentajes con coma decimal', () => {
     expect(normalize(formatPercent(12.5))).toBe('12,5 %');
     expect(normalize(formatPercent(100))).toBe('100 %');
+  });
+});
+
+describe('formatAmount', () => {
+  it('omite los decimales cuando el monto es entero', () => {
+    expect(normalize(formatAmount('200000.00'))).toBe('$ 200.000');
+    expect(normalize(formatAmount(0))).toBe('$ 0');
+  });
+
+  it('los muestra cuando el monto los tiene', () => {
+    expect(normalize(formatAmount('1500.5'))).toBe('$ 1.500,50');
+  });
+
+  it('respeta la moneda', () => {
+    expect(normalize(formatAmount('150', 'USD'))).toContain('150');
+    expect(formatAmount('150', 'USD')).not.toBe(formatAmount('150', 'ARS'));
   });
 });

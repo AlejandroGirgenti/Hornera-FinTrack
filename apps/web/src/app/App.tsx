@@ -5,6 +5,7 @@ import { LoginPage } from '../features/auth/LoginPage';
 import { RegisterPage } from '../features/auth/RegisterPage';
 import { ResetPasswordPage } from '../features/auth/ResetPasswordPage';
 import { GuestRoute, ProtectedRoute } from '../features/auth/routes';
+import { BudgetsPage } from '../features/budgets/BudgetsPage';
 import { CategoriesPage } from '../features/categories/CategoriesPage';
 import { SettingsPage } from '../features/settings/SettingsPage';
 import { TransactionsPage } from '../features/transactions/TransactionsPage';
@@ -28,6 +29,7 @@ export function App() {
           <Route index element={<DashboardPage />} />
           <Route path="movimientos" element={<TransactionsPage />} />
           <Route path="categorias" element={<CategoriesPage />} />
+          <Route path="presupuestos" element={<BudgetsPage />} />
           <Route path="configuracion" element={<SettingsPage />} />
         </Route>
       </Route>

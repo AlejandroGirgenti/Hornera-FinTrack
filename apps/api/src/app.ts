@@ -8,6 +8,7 @@ import { errorHandler, notFoundHandler } from './middlewares/error-handler';
 import { apiLimiter } from './middlewares/rate-limit';
 import { requestLogger } from './middlewares/request-logger';
 import { authRouter } from './modules/auth/auth.router';
+import { budgetsRouter } from './modules/budgets/budgets.router';
 import { categoriesRouter } from './modules/categories/categories.router';
 import { exchangeRatesRouter } from './modules/exchange-rates/exchange-rates.router';
 import { reportsRouter } from './modules/reports/reports.router';
@@ -45,6 +46,7 @@ export function createApp() {
   app.use('/api/v1', apiLimiter);
   app.use('/api/v1/auth', authRouter);
   app.use('/api/v1/categories', categoriesRouter);
+  app.use('/api/v1/budgets', budgetsRouter);
   app.use('/api/v1/transactions', transactionsRouter);
   app.use('/api/v1/reports', reportsRouter);
   app.use('/api/v1/exchange-rates', exchangeRatesRouter);

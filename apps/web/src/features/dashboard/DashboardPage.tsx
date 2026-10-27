@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { currentMonth } from '../../lib/dates';
+import { BudgetsCard } from '../budgets/BudgetsCard';
 import { useAuth } from '../auth/AuthContext';
 import { ExpensesBreakdown } from './ExpensesBreakdown';
 import { MonthPicker } from './MonthPicker';
@@ -27,8 +28,10 @@ export function DashboardPage() {
 
       <div className="grid gap-6 lg:grid-cols-2">
         <ExpensesBreakdown month={month} />
-        <TrendChart />
+        <BudgetsCard month={month} />
       </div>
+
+      <TrendChart />
     </div>
   );
 }

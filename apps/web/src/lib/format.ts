@@ -15,6 +15,20 @@ export function formatMoney(amount: string | number, currency: Currency = 'ARS')
   return formatter.format(Number(amount));
 }
 
+/**
+ * Como formatMoney, pero sin los ",00" cuando el monto es entero ("$ 200.000" en lugar de
+ * "$ 200.000,00"). Para pantallas con muchos montos, como los presupuestos.
+ */
+export function formatAmount(amount: string | number, currency: Currency = 'ARS'): string {
+  const value = Number(amount);
+  if (!Number.isInteger(value)) return formatMoney(value, currency);
+  return new Intl.NumberFormat('es-AR', {
+    style: 'currency',
+    currency,
+    maximumFractionDigits: 0,
+  }).format(value);
+}
+
 /** "2026-10-01" → "1 oct". Se interpreta la fecha como pura, sin desfasarla por zona horaria. */
 export function formatShortDate(isoDate: string): string {
   const [year = 0, month = 1, day = 1] = isoDate.split('-').map(Number);

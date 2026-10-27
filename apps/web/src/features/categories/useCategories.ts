@@ -11,14 +11,14 @@ export function useCategories() {
 }
 
 /**
- * El nombre y el color de una categoría aparecen en los movimientos y en los reportes, por eso
+ * El nombre y el color de una categoría aparecen en los movimientos, en los reportes y en los presupuestos, por eso
  * un cambio invalida también esos datos.
  */
 function useInvalidateAfterChange() {
   const queryClient = useQueryClient();
   return () =>
     Promise.all(
-      ['categories', 'transactions', 'reports'].map((key) =>
+      ['categories', 'transactions', 'reports', 'budgets'].map((key) =>
         queryClient.invalidateQueries({ queryKey: [key] }),
       ),
     );

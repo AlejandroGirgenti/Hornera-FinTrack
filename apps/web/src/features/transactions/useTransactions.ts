@@ -18,13 +18,15 @@ export function useTransactionList(filters: TransactionFilters) {
   });
 }
 
-/** Cualquier cambio en los movimientos invalida el listado y los reportes del dashboard. */
+/** Cualquier cambio en los movimientos invalida el listado, los reportes del dashboard y los presupuestos. */
 function useInvalidateAfterChange() {
   const queryClient = useQueryClient();
   return () =>
     Promise.all([
       queryClient.invalidateQueries({ queryKey: ['transactions'] }),
       queryClient.invalidateQueries({ queryKey: ['reports'] }),
+      // Lo gastado de cada categoría cambia: los presupuestos se recalculan
+      queryClient.invalidateQueries({ queryKey: ['budgets'] }),
     ]);
 }
 
