@@ -43,7 +43,6 @@ pnpm dev:api                             # en una terminal
 pnpm dev:web                             # en otra: http://localhost:5173
 ```
 
-
 ## Más información
 
 La [documentación técnica](docs/DETALLES.md) explica las variables de entorno, la API, los tests, la estructura del proyecto, cómo funciona la autenticación y las decisiones de diseño.
