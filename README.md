@@ -4,13 +4,19 @@ Aplicación web de finanzas personales: registrá ingresos y gastos en pesos y d
 
 Proyecto de portfolio fullstack pensado para Argentina: convierte dólares a pesos con la cotización de dolarapi.com (oficial, blue, MEP, etc.) y está todo en español rioplatense.
 
-CAPTURAS: guardá las imágenes en docs/screenshots/ y descomentá estas líneas.
+CAPTURAS:
 
 ![Panel](docs/screenshots/panel.png)
 ![Presupuestos](docs/screenshots/presupuestos.png)
 ![Movimientos](docs/screenshots/movimientos.png)
 
-<!-- DEMO: cuando la app esté publicada, agregá acá el enlace y el usuario de prueba. -->
+## Demo
+
+🔗 **https://hornera-fin-track.vercel.app**
+
+Usuario de prueba: `demo@fintrack.dev` / `Demo1234`
+
+> La API está en un plan gratuito: si nadie la usó en un rato, la primera carga puede tardar hasta un minuto en despertar.
 
 ## Qué hace
 
@@ -37,7 +43,6 @@ pnpm dev:api                             # en una terminal
 pnpm dev:web                             # en otra: http://localhost:5173
 ```
 
-Usuario de prueba: `demo@fintrack.dev` / `Demo1234`
 
 ## Más información
 
